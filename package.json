@@ -1,0 +1,9 @@
+{
+  "name": "qlab-remote-cue-list-monitoring",
+  "version": "0.1.0",
+  "description": "Monitor the next cue to be triggered from a specific cue list remotely, via osc, with a variety of output options.",
+  "license": "MIT",
+  "dependencies": {
+    "osc": "^2.4.1"
+  }
+}
