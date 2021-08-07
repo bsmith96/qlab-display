@@ -14,7 +14,7 @@ This script has several versions for displaying the result:
 3. In terminal, set the repository folder as the directory, e.g: `cd qlab-mon-open-stage-control.js`
 4. Open the script you wish to use in a text or code editor, and enter the correct values in the "Variables" sections. This includes:
   - `cueListNumber`: the cue number of the cue list to monitor
-  - `qlabIP`: the IP address of the Qlab machine. If this is localhost, use "127.0.0.1"/
+  - `qlabIP`: the IP address of the Qlab machine. If this is localhost, use "127.0.0.1"
   - `qlabPort`: the port Qlab is listening for OSC commands on, by default 53000
   - `companionIP` or `openStageControlIP`: the IP address of the computer running either Bitfocus Companion (for streamdeck) or Open Stage Control.
   - `companionPort` or `openStageControlPort`: the port which the above devices are listening for OSC on.
@@ -26,7 +26,7 @@ This script has several versions for displaying the result:
 
 In terminal, enter: `node qlab-mon.js`, replacing `qlab-mon.js` with the filename of the version of the script you wish to use. Leave this terminal window open, and it will constantly send Qlab a message every 0.5s (by default) to request the playhead position on the cue list specified in "Variables".
 
-### qlab-mon.js
+### qlab-mon.js
 
 The terminal window will display the number and name of the playhead position, updating automatically every 0.5s.
 
@@ -34,7 +34,7 @@ The terminal window will display the number and name of the playhead position, u
 
 In addition to displaying this information in the terminal window, if you have Bitfocus Companion open, the buttons you set should update automatically.
 
-### qlab-mon-open-stage-control.js
+### qlab-mon-open-stage-control.js
 
 In addition to displaying this information in the terminal window, once you start Open Stage Control on the correct port, with the correct template open, this template should update.
 
