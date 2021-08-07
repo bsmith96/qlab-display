@@ -38,4 +38,10 @@ In addition to displaying this information in the terminal window, if you have B
 
 In addition to displaying this information in the terminal window, once you start Open Stage Control on the correct port, with the correct template open, this template should update.
 
-If you are using the included template, `open-stage-control-template.json`, try setting this file in the "load" option before clicking the 'play' button to start Open Stage Control. This will automatically load the file, and enable you to log into, for example, http://127.0.0.1:7000 remotely and see this information too. 
+If you are using the included template, `open-stage-control-template.json`, try setting this file in the "load" option before clicking the 'play' button to start Open Stage Control. This will automatically load the file, and enable you to log into, for example, http://127.0.0.1:7000 remotely and see this information too.
+
+## Limitations
+
+To use this method, the cue list you wish to monitor must have a cue number. e.g., for "Click Tracks", you might number the cue list "CLICK".
+
+You must also (currently - I might be able to update this) ensure every track that the playhead could be at in that cue list has a cue number. Otherwise, the display will show no cue at the playhead, but pressing GO would still fire whatever cue is standing by.
