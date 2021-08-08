@@ -1,9 +1,16 @@
 {
   "name": "qlab-remote-cue-list-monitoring",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Monitor the next cue to be triggered from a specific cue list remotely, via osc, with a variety of output options.",
+  "main": "qlab-mon-open-stage-control.js",
+  "author": "Ben Smith",
   "license": "MIT",
   "dependencies": {
-    "osc": "^2.4.1"
+    "osc": "^2.4.1",
+    "yargs": "^17.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bsmith96/Qlab-remote-cue-list-monitoring"
   }
 }
