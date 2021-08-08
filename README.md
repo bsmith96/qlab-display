@@ -11,7 +11,7 @@ This script has several versions for displaying the result:
 
 1. Clone this repository, or download and expand the zip.
 2. Ensure you have installed [node.js](https://nodejs.org/en/).
-3. In terminal, set the repository folder as the directory, e.g: `cd qlab-mon-open-stage-control`
+3. In terminal, set the repository folder as the directory, e.g: `cd Documents/qlab-display`
 4. Open the script you wish to use in a text or code editor, and enter the correct values in the "Variables" sections. This includes:
    - `cueListNumber`: the cue number of the cue list to monitor
    - `qlabIP`: the IP address of the Qlab machine. If this is localhost, use "127.0.0.1"
