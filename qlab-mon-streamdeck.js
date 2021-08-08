@@ -2,11 +2,11 @@
  * @description Qlab Cue list Monitoring with Streamdeck
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 0.2.0
+ * @version 1.0.0
  * @about Monitoring the next cue in a specific cue list on a Streamdeck
  * 
  * @changelog
- *   v0.2.0  - add ability to set variables from command line
+ *   v1.0.0  - add ability to set variables from command line
  *           - streamline interpretation of Qlab replies
  *           - remove logging of replies
  */

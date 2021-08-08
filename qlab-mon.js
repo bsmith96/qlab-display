@@ -2,11 +2,11 @@
  * @description Qlab Cue list Monitoring
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 0.2.0
+ * @version 1.0.0
  * @about Monitoring the next cue in a specific cue list in terminal
  * 
  * @changelog
- *   v0.2.0  - add ability to set variables from command line
+ *   v1.0.0  - add ability to set variables from command line
  *           - streamline interpretation of Qlab replies
  */
 
@@ -134,7 +134,7 @@ udpPort.on("ready", function () {
 qlabReplies.on("ready", function() {
   var ipAddresses = getIPAddresses();
 
-  console.log("  OPEN STAGE CONTROL\nListening for OSC over UDP.");
+  console.log("  COMMAND LINE\nListening for OSC over UDP.");
   ipAddresses.forEach(function (address) {
     console.log(" Host:", address + ", Port:", qlabReplies.options.localPort);
   });
