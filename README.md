@@ -60,3 +60,17 @@ If you are using the included template, `open-stage-control-template.json`, try 
 ## Limitations
 
 To use this method, the cue list you wish to monitor must have a cue number. e.g., for "Click Tracks", you might number the cue list "CLICK".
+
+## Screenshots
+
+![Launching the script from macOS terminal](./_images/1 Launch from terminal.png)
+Launching the script from the macOS terminal
+
+![Launching the script with custom options](./_images/2 Set options from terminal.png)
+Setting custom options when launching the script from the macOS terminal
+
+![Qlab Display in Open Stage Control](./_images/3 Open Stage Control display.png)
+The Qlab Display working in Open Stage Control
+
+![Qlab Display when disconnected](./_images/4 Disconnected display.png)
+Qlab Display when Qlab has disconnected
