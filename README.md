@@ -1,4 +1,4 @@
-# Qlab-remote-cue-list-monitoring
+# Qlab Display
 
 ## Methods
 
