@@ -6,6 +6,7 @@
  * @about Monitoring the next cue in a specific cue list using Open Stage Control
  * 
  * @changelog
+ *   v1.1.0  - add a heartbeat display in Open Sound Control to show a successful link to Qlab
  *   v1.0.0  - add ability to set variables from command line
  *           - streamline interpretation of Qlab replies
  *           - remove logging of replies
