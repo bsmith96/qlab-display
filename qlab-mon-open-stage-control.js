@@ -27,6 +27,7 @@ var openStageControlIP = "127.0.0.1";
 var openStageControlPort = 7000;
 const openStageControlQNum = "/next/number";
 const openStageControlQName = "/next/name";
+const openStageControlHeartbeat = "/qlab/connected";
 
 var cueNumber = "";
 var cueName = "";
@@ -123,6 +124,13 @@ function sendToOpenStageControl (theAddress, theArgs = "") {
   }
 }
 
+// heartbeat-style indicator that Qlab is connected
+function isQlabConnected () {
+  sendToOpenStageControl(openStageControlHeartbeat, 1);
+
+  setTimeout(() => {  sendToOpenStageControl(openStageControlHeartbeat, 0.1); }, 100);
+};
+
 // Poll Qlab for the current playhead position of cueListNumber (main loop)
 function getCueListPlayhead () {
   sendToQlab("/cue/" + cueListNumber + "/playheadId");
@@ -188,6 +196,7 @@ qlabReplies.on("message", function(oscMessage) {
   // playhead position, cue id
   if(oscMessage.address.startsWith("/reply") && oscMessage.address.endsWith("/playheadId")) {
     cueID = replyData.data;
+    isQlabConnected();
     if (cueID !== "none") {
       sendToQlab("/cue_id/" + cueID + "/number");
       sendToQlab("/cue_id/" + cueID + "/displayName");
