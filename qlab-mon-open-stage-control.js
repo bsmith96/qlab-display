@@ -2,7 +2,7 @@
  * @description Qlab Cue list Monitoring with Open Stage Control
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 1.0.0
+ * @version 1.1.0
  * @about Monitoring the next cue in a specific cue list using Open Stage Control
  * 
  * @changelog
