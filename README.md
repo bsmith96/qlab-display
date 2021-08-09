@@ -78,10 +78,10 @@ To use this method, the cue list you wish to monitor must have a cue number. e.g
 ## Screenshots
 
 ### Launching the script from the macOS terminal
-![Launching the script from macOS terminal](https://github.com/bsmith96/qlab-display/blob/d455d86049b6652e5e1927ed41af07260de47376/_images/1%20Launch%20from%20terminal.png)
+![Launching the script from macOS terminal](https://github.com/bsmith96/qlab-display/blob/88a575394aa7cfd73a8b2e9f0469c437339c826e/_images/1%20Launch%20from%20terminal.png)
 
 ### Setting custom options when launching the script from the macOS terminal
-![Launching the script with custom options](https://github.com/bsmith96/qlab-display/blob/d455d86049b6652e5e1927ed41af07260de47376/_images/2%20Set%20options%20from%20terminal.png)
+![Launching the script with custom options](https://github.com/bsmith96/qlab-display/blob/88a575394aa7cfd73a8b2e9f0469c437339c826e/_images/2%20Set%20options%20from%20terminal.png)
 
 ### The Qlab Display working in Open Stage Control
 ![Qlab Display in Open Stage Control](https://github.com/bsmith96/qlab-display/blob/d455d86049b6652e5e1927ed41af07260de47376/_images/3%20Open%20Stage%20Control%20display.png)
