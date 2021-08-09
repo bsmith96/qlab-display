@@ -193,7 +193,7 @@ qlabReplies.on("ready", function() {
     console.log(" Listening for Qlab replies at:    " + address + ":", qlabReplies.options.localPort);
   });
   console.log(" Sending to Qlab at:               " + qlabIP + ":", qlabPort);
-  console.log(" Sending to display at:            " + config.display.ip + ":", config.display.openstagecontrol.port);
+  console.log(" Sending to display at:            " + openStageControlIP + ":", openStageControlPort);
   console.log("Close this command line instance to exit")
 });
 

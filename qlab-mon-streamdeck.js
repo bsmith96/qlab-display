@@ -212,7 +212,7 @@ qlabReplies.on("ready", function() {
     console.log(" Listening for Qlab replies at:    " + address + ":", qlabReplies.options.localPort);
   });
   console.log(" Sending to Qlab at:               " + qlabIP + ":", qlabPort);
-  console.log(" Sending to display at:            " + config.display.ip + ":", config.display.streamdeck.port);
+  console.log(" Sending to display at:            " + companionIP + ":", companionPort);
   console.log("Close this command line instance to exit")
 });
 
