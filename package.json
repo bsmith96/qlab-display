@@ -1,12 +1,12 @@
 {
   "name": "qlab-display",
+  "bin": "qlab-mon-open-stage-control.js",
   "description": "Monitor the next cue to be triggered from a specific cue list remotely, via osc, with a variety of output options.",
   "version": "1.1.2",
   "main": "qlab-mon-open-stage-control.js",
   "scripts": {
-    "commandline": "node \"qlab-mon.js\"",
-    "streamdeck": "node \"qlab-mon-streamdeck.js\"",
-    "openstagecontrol": "node \"qlab-mon-open-stage-control.js\""
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "osc": "^2.4.1",
