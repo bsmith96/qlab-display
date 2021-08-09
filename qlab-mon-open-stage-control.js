@@ -2,10 +2,13 @@
  * @description Qlab Cue list Monitoring with Open Stage Control
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 1.1.0
+ * @version 1.2.0
  * @about Monitoring the next cue in a specific cue list using Open Stage Control
  * 
  * @changelog
+ *   v1.2.0  - implement config.json to set variables
+ *           - update commenting to make script easier to read
+ *           - update logging to give more useful info
  *   v1.1.0  - add a heartbeat display in Open Sound Control to show a successful link to Qlab
  *   v1.0.0  - add ability to set variables from command line
  *           - streamline interpretation of Qlab replies
@@ -17,26 +20,28 @@ const osc = require("osc"); // for working with OSC messages
 const yargs = require("yargs"); // for optional setting variables by command line
 
 
-/*************
- * VARIABLES *
- *************/
+/*******************************************
+ ***************  VARIABLES  ***************
+ *******************************************/
 
-var cueListNumber = "CLICK";
-var qlabIP = "127.0.0.1";
-var qlabPort = 53000;
-var openStageControlIP = "127.0.0.1";
-var openStageControlPort = 7000;
-const openStageControlQNum = "/next/number";
-const openStageControlQName = "/next/name";
-const openStageControlHeartbeat = "/qlab/connected";
+const config = require('./config.json');
+
+var cueListNumber = config.cuelistnumber;
+var qlabIP = config.qlab.ip;
+var qlabPort = config.qlab.port;
+var openStageControlIP = config.display.ip;
+var openStageControlPort = config.display.openstagecontrol.port;
+const openStageControlQNum = config.display.openstagecontrol.number;
+const openStageControlQName = config.display.openstagecontrol.name;
+const openStageControlHeartbeat = config.display.openstagecontrol.heartbeat;
 
 var cueNumber = "";
 var cueName = "";
 
 
-/**********************************************
- * SET VARIABLES FROM COMMAND LINE (OPTIONAL) *
- **********************************************/
+/******************************************************************
+ **********  SET VARIABLES FROM COMMAND LINE (OPTIONAL)  **********
+ ******************************************************************/
 
 const argv = yargs
   .option('cuelist', {
@@ -89,9 +94,9 @@ if (argv.displayport) {
 };
 
 
-/*************
- * FUNCTIONS *
- *************/
+/*******************************************
+ ***************  FUNCTIONS  ***************
+ *******************************************/
 
 // Send an OSC message to Qlab
 function sendToQlab (theAddress, theArgs = "") {
@@ -140,9 +145,9 @@ function getCueListPlayhead () {
 };
 
 
-/****************
- * MAIN ROUTINE *
- ****************/
+/**********************************************
+ ***************  MAIN ROUTINE  ***************
+ **********************************************/
 
 var getIPAddresses = function () {
   var os = require("os"),
@@ -183,10 +188,12 @@ udpPort.on("ready", function () {
 qlabReplies.on("ready", function() {
   var ipAddresses = getIPAddresses();
 
-  console.log("  OPEN STAGE CONTROL\nListening for OSC over UDP.");
+  console.log("  OPEN STAGE CONTROL    -    " + config.production.name + "  <-  " + config.production.cuelistname);
   ipAddresses.forEach(function (address) {
-    console.log(" Host:", address + ", Port:", qlabReplies.options.localPort);
+    console.log(" Listening for Qlab replies at:    " + address + ":", qlabReplies.options.localPort);
   });
+  console.log(" Sending to Qlab at:               " + qlabIP + ":", qlabPort);
+  console.log(" Sending to display at:            " + config.display.ip + ":", config.display.openstagecontrol.port);
   console.log("Close this command line instance to exit")
 });
 

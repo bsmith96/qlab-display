@@ -11,23 +11,37 @@ This script has several versions for displaying the result:
 
 1. Clone this repository, or download and expand the zip.
 2. Ensure you have installed [node.js](https://nodejs.org/en/).
-3. In terminal, set the repository folder as the directory, e.g: `cd Documents/qlab-display`
-4. Open the script you wish to use in a text or code editor, and enter the correct values in the "Variables" sections. This includes:
-   - `cueListNumber`: the cue number of the cue list to monitor
-   - `qlabIP`: the IP address of the Qlab machine. If this is localhost, use "127.0.0.1"
-   - `qlabPort`: the port Qlab is listening for OSC commands on, by default 53000
-   - `companionIP` or `openStageControlIP`: the IP address of the computer running either Bitfocus Companion (for streamdeck) or Open Stage Control.
-   - `companionPort` or `openStageControlPort`: the port which the above devices are listening for OSC on.
-   - `companionPage`: the page on your Streamdeck that you wish to see the indicator.
-   - `companionQNumButton` and `companionQNameButton`: the number of the buttons on that page which you would like to display the cue number and the cue name.
-   - `openStageControlQNum` and `openStageControlQName`: the command to send to update elements with the cue number and cue name. The default works with the open-stage-control-template.json file included in this repository.
-5. You can also set most of these variables from the command line, which could be particularly useful for cue list numbers and OSC ports.
+3. In terminal, set the repository folder as the directory, e.g: `cd Documents/qlab-display`.
+4. In terminal, enter `npm install` to install all dependencies of the project.
+5. To set variables to allow the scripts to work on your system, open config.json in a text or code editor. Here, you can set:
+   - Production information:
+      - Production name
+      - Cue list name
+      - Config version (in case you make changes to your network)
+   - Cue list number
+   - Qlab information:
+      - IP address
+      - Port to send to
+      - Port replies come from
+   - Display information:
+      - IP address
+      - For Open Stage Control:
+         - Port
+         - OSC address for displaying cue number
+         - OSC address for displaying cue name
+         - OSC address for a heartbeat indicator
+      - For Streamdeck:
+         - Port
+         - Companion page number
+         - Companion button number for Q Number
+         - Companion button number for Q Name
+6. You can also set most of these variables from the command line, which could be particularly useful for cue list numbers and OSC ports.
 
 ## Operation
 
 Choose which version of the script you wish to use: in `package.json`, change the filename under "main" to be that script. By default, I've set this to `qlab-mon-open-stage-control.js`.
 
-In terminal, enter: `node .`. Leave this terminal window open, and it will constantly send Qlab a message every 0.5s (by default) to request the playhead position on the cue list specified in "Variables".
+In terminal, enter: `node .`. Leave this terminal window open, and it will constantly send Qlab a message every 0.5s (by default) to request the playhead position on the cue list specified.
 
 ### Command Line Variables
 
