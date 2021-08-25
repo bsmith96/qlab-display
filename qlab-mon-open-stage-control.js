@@ -2,10 +2,11 @@
  * @description Qlab Cue list Monitoring with Open Stage Control
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 1.2.0
+ * @version 1.3.0
  * @about Monitoring the next cue in a specific cue list using Open Stage Control
  * 
  * @changelog
+ *   v1.3.0  - changed config.json to config.yml
  *   v1.2.0  - implement config.json to set variables
  *           - update commenting to make script easier to read
  *           - update logging to give more useful info

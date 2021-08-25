@@ -2,10 +2,11 @@
  * @description Qlab Cue list Monitoring
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 1.1.0
+ * @version 1.2.0
  * @about Monitoring the next cue in a specific cue list in terminal
  * 
  * @changelog
+ *   v1.2.0  - Changed config.json to config.yml
  *   v1.1.0  - implement config.json to set variables
  *           - update commenting to make script easier to read
  *           - update logging to give more useful info
