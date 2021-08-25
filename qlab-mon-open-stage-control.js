@@ -16,10 +16,10 @@
  */
 
 
-const osc = require("osc"); // for working with OSC messages
+const osc   = require("osc"); // for working with OSC messages
 const yargs = require("yargs"); // for optional setting variables by command line
-const fs = require("fs");
-const yaml = require("js-yaml");
+const fs    = require("fs");
+const yaml  = require("js-yaml");
 
 
 /*******************************************

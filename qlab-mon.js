@@ -14,10 +14,10 @@
  */
 
 
-const osc = require("osc");
+const osc   = require("osc");
 const yargs = require("yargs"); // for optional setting variables by command line
-const fs = require("fs");
-const yaml = require("js-yaml");
+const fs    = require("fs");
+const yaml  = require("js-yaml");
 
 
 /*******************************************
