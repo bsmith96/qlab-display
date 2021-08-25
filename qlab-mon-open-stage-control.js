@@ -18,13 +18,16 @@
 
 const osc = require("osc"); // for working with OSC messages
 const yargs = require("yargs"); // for optional setting variables by command line
+const fs = require("fs");
+const yaml = require("js-yaml");
 
 
 /*******************************************
  ***************  VARIABLES  ***************
  *******************************************/
 
-const config = require('./config.json');
+let fileContents = fs.readFileSync('./config.yml', 'utf8');
+let config = yaml.load(fileContents);
 
 var cueListNumber = config.cuelistnumber;
 var qlabIP = config.qlab.ip;

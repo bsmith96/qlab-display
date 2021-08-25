@@ -1,0 +1,24 @@
+production:
+  name: Production Name
+  cuelistname: The Cue List
+  version: 1.0.0
+
+cuelistnumber: CLICKS
+
+qlab:
+  ip: 127.0.0.1
+  port: 53000
+  reply: 53001
+
+display:
+  ip: 127.0.0.1
+  openstagecontrol:
+    port: 7000
+    number: /next/number
+    name: /next/name
+    heartbeat: /qlab/connected
+  streamdeck:
+    port: 12321
+    page: 19
+    numberbutton: 15
+    namebutton: 16

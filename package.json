@@ -2,7 +2,7 @@
   "name": "qlab-display",
   "bin": "qlab-mon-open-stage-control.js",
   "description": "Monitor the next cue to be triggered from a specific cue list remotely, via osc, with a variety of output options.",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "main": "qlab-mon-open-stage-control.js",
   "scripts": {
     "start": "node .",
@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "osc": "^2.4.1",
-    "yargs": "^17.1.0"
+    "yargs": "^17.1.0",
+    "js-yaml": "^4.1.0"
   },
   "repository": {
     "type": "git",
