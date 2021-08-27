@@ -1,24 +1,26 @@
 production:
-  name: Production Name
-  cuelistname: The Cue List
-  version: 1.0.0
+  name: Production Name #                     name of the production, for reference
+  cuelistname: The Cue List #                 name of the cue list you are monitoring, for reference
+  version: 1.0.0 #                            version of config.yml, to keep track of updates
 
-cuelistnumber: CLICKS
+cuelistnumber: CLICKS #                       cue number of the cue list to monitor by osc
 
+# NETWORK AND OSC SETTINGS FOR QLAB
 qlab:
   ip: 127.0.0.1
   port: 53000
   reply: 53001
 
+# NETWORK AND OSC SETTINGS FOR YOUR DISPLAY COMPUTER
 display:
   ip: 127.0.0.1
   openstagecontrol:
     port: 7000
-    number: /next/number
-    name: /next/name
-    heartbeat: /qlab/connected
+    number: /next/number #                    the OSC message to send with the cue number
+    name: /next/name #                        the OSC message to send with the cue name
+    heartbeat: /qlab/connected #              the OSC message to send to indicate Qlab is connected
   streamdeck:
     port: 12321
-    page: 19
-    numberbutton: 15
-    namebutton: 16
+    page: 19 #                                the page on Bitfocus Companion
+    numberbutton: 15 #                        the button on that page to display the cue number
+    namebutton: 16 #                          the button on that page to display the cue name

@@ -13,7 +13,7 @@ This script has several versions for displaying the result:
 2. Ensure you have installed [node.js](https://nodejs.org/en/).
 3. In terminal, set the repository folder as the directory, e.g: `cd Documents/qlab-display`.
 4. In terminal, enter `npm install` to install all dependencies of the project.
-5. To set variables to allow the scripts to work on your system, open config.json in a text or code editor. Here, you can set:
+5. To set variables to allow the scripts to work on your system, open config.yml in a text or code editor. Here, you can set:
    - Production information:
       - Production name
       - Cue list name
