@@ -6,6 +6,7 @@
  * @about Monitoring the next cue in a specific cue list on a Streamdeck
  * 
  * @changelog
+ *   v1.3.0  - now sends blank info for blank cue names and numbers - previously the last non-blank value would persist
  *   v1.2.0  - changed config.json to config.yml
  *   v1.1.0  - implement config.json to set variables
  *           - update commenting to make script easier to read
@@ -237,11 +238,19 @@ qlabReplies.on("message", function(oscMessage) {
   // cue name response
   } else if(oscMessage.address.startsWith("/reply") && oscMessage.address.endsWith("/displayName")) {
     cueName = replyData.data;
-    sendToCompanion("/style/text/" + companionPage + "/" + companionQNameButton, cueName);
+    if (cueName !== "") {
+      sendToCompanion("/style/text/" + companionPage + "/" + companionQNameButton, cueName);
+    } else {
+      sendToCompanion("/style/text/" + companionPage + "/" + companionQNameButton, " ");
+    }
   // cue number response
   } else if(oscMessage.address.startsWith("/reply") && oscMessage.address.endsWith("/number")) {
     cueNumber = replyData.data;
-    sendToCompanion("/style/text/" + companionPage + "/" + companionQNumButton, cueNumber);
+    if (cueNumber !== "") {
+      sendToCompanion("/style/text/" + companionPage + "/" + companionQNumButton, cueNumber);
+    } else {
+      sendToCompanion("/style/text/" + companionPage + "/" + companionQNumButton, " ");
+    }
   };
 
 });
