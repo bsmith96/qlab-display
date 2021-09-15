@@ -2,7 +2,7 @@
  * @description Qlab Cue list Monitoring with Streamdeck
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 1.2.0
+ * @version 1.3.0
  * @about Monitoring the next cue in a specific cue list on a Streamdeck
  * 
  * @changelog
