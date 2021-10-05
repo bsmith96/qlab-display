@@ -89,7 +89,7 @@ function sendToQlab (theAddress, theArgs = "") {
       args: [
         theArgs
       ]
-    }, qlabIP, qlabPort);
+    }, )
   }
 }
 
@@ -136,8 +136,7 @@ var qlabReplies = new osc.UDPPort({
 
 // ready the default port for listening and sending
 udpPort.on("ready", function () {  
-  sendToQlab("/workspace/141BFBC5-2966-4F87-88B2-33260C387FDA/updates", 1);
-  //getCueListPlayhead() // start the loop to retrieve the playhead position once ready
+  getCueListPlayhead() // start the loop to retrieve the playhead position once ready
 });
 
 // ready the qlab replies port
@@ -154,15 +153,7 @@ qlabReplies.on("ready", function() {
 
 // INTERPRET QLAB REPLIES
 qlabReplies.on("message", function(oscMessage) {
-  //var replyData = JSON.parse(oscMessage.args[0]); // parse JSON reply as a JSON object
-  //console.log(replyData);
-  console.log("Qlab replies: \n" + oscMessage.args);
-  if (oscMessage.address.startsWith("/update")) {
-    //var replyData = JSON.parse(oscMessage.args[0]);
-    var cueID = oscMessage.args[0]
-    //cueID = replyData.data;
-    sendToQlab("/cue_id/" + cueID + "/displayName");
-  }
+  var replyData = JSON.parse(oscMessage.args[0]); // parse JSON reply as a JSON object
   
   // playhead position, cue id
   if(oscMessage.address.startsWith("/reply") && oscMessage.address.endsWith("/playheadId")) {
@@ -176,15 +167,12 @@ qlabReplies.on("message", function(oscMessage) {
     }
   // cue name response
   } else if(oscMessage.address.startsWith("/reply") && oscMessage.address.endsWith("/displayName")) {
-    var replyData = JSON.parse(oscMessage.args[0]);
     cueName = replyData.data;
     console.clear();
     console.log(cueName)
   // cue number response
   } else if(oscMessage.address.startsWith("/reply") && oscMessage.address.endsWith("/number")) {
     cueNumber = replyData.data;
-  } else if(oscMessage.address.startsWith("/update")) {
-    console.log(oscMessage)
   };
 
 });
@@ -193,6 +181,7 @@ qlabReplies.on("message", function(oscMessage) {
 udpPort.on("message", function (oscMessage) {
   var oscCommand = oscMessage.address;
   var oscArgument = oscMessage.args[0];
+  console.log(oscCommand + "  |  " + oscArgument);
 });
 
 // catch errors
@@ -207,6 +196,3 @@ qlabReplies.on("error", function(err) {
 // open the ports
 qlabReplies.open();
 udpPort.open();
-
-//sendToQlab("/cue/selected/armed", "0")
-//sendToQlab("/workspace/141BFBC5-2966-4F87-88B2-33260C387FDA/updates", "1");
