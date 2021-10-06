@@ -5,7 +5,7 @@
 
 <!--[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F120U9I)-->
 
-## NEW VERSION - open-stage-control-module
+# Custom Module for Open Stage Control
 
 This version runs entirely within the Open Stage Control software, as a 'custom module'. It also - theoretically - requires less of the Qlab computer, as it does not constantly send messages asking the current position. Instead, it prompts Qlab to give it updates when there are changes, and interprets the response appropriately.
 
@@ -17,6 +17,8 @@ This version runs entirely within the Open Stage Control software, as a 'custom 
   - **port**: this is the port that the web server is served to. A useful default is 7000, but it can be anything.
   - **no-gui**: if you do not want this open on the device which is the server, set this to true.
 - Now, click start.
+
+# Node JS version
 
 ## Methods
 
