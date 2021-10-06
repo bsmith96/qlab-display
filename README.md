@@ -10,7 +10,8 @@
 This version runs entirely within the Open Stage Control software, as a 'custom module'. It also - theoretically - requires less of the Qlab computer, as it does not constantly send messages asking the current position. Instead, it prompts Qlab to give it updates when there are changes, and interprets the response appropriately.
 
 - First, open `open-stage-control-config.json` and fill out the appropriate information – the Qlab IP address should be simple, and if you are using the built in template `open-stage-control-template.json` (within the `open-stage-control-module` folder) you shouldn't need to change the addresses. To find the workspace ID and Cue List ID, on your Qlab mac, run `Get-IDs.applescript`.
-- Open **Open Stage Control**. Set the following settings, using files from the `open-stage-control-module` folder:
+- Open **Open Stage Control**. Load `Get-Playhead.config` in the Open Stage Control menu. 
+- Alternatively, Set the following settings, using files from the `open-stage-control-module` folder:
   - **load**: select the file "open-stage-control-template.json"
   - **custom-module**: select the file "get-display-name-from-id.js"
   - **osc-port**: set 53001. This is the port it will listen for replies from.

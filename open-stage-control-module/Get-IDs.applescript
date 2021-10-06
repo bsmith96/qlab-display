@@ -18,7 +18,7 @@ tell application id "com.figure53.Qlab.4" to tell front workspace
 	
 	-- write text to paste in config file
 	set jsonString to "\"workspaceID\":\"" & workspaceID & "\",
-  \"cueListID\": \"" & cueListID & "\","
+  \"cueListID\": \"" & cueListID & "\""
 	
 	-- copy the text
 	set the clipboard to jsonString

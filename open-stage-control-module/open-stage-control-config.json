@@ -1,7 +1,14 @@
 {
-  "qlabIP": "192.168.68.150",
-  "workspaceID":"0C064194-574C-4CB0-BE2E-E36243B8F273",
-  "cueListID": "90375EE0-C014-43CE-913E-D51E563D0D54",
+  "QlabMain": {
+    "ip": "127.0.0.1",
+    "workspaceID":"844C6E1A-2621-4B21-BC5D-9EE6D746FCC1",
+    "cueListID": "90375EE0-C014-43CE-913E-D51E563D0D54"
+  },
+  "QlabBackup": {
+    "ip": "127.0.0.1",
+    "workspaceID":"844C6E1A-2621-4B21-BC5D-9EE6D746FCC1",
+    "cueListID": "90375EE0-C014-43CE-913E-D51E563D0D54"
+  },
   "address": {
     "name": "/next/name",
     "number": "/next/number"

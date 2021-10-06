@@ -20,15 +20,15 @@ var config = loadJSON("open-stage-control-config.json");
 var nameAddress = config.address.name;
 var numAddress = config.address.number;
 
-var qlabIP = config.qlabIP;
-var workspaceID = config.workspaceID;
-var cueListID = config.cueListID;
+var qlabIP = config.QlabMain.ip;
+var workspaceID = config.QlabMain.workspaceID;
+var cueListID = config.QlabMain.cueListID;
 
 module.exports = {
 
   // ON START, ASK QLAB FOR UPDATES
   init:function(){
-    send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1)
+    send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1);
   },
 
   // FILTER ALL INCOMING MESSAGES
@@ -49,11 +49,15 @@ module.exports = {
       if (address.startsWith("/reply")) {
         var returnedValue = decodeQlabReply(args); // decode the reply to get the value requested
         if (address.endsWith("/displayName")) {
-          receive(qlabIP, 53000, nameAddress, returnedValue) // send the name to the server
+          receive(qlabIP, 53001, nameAddress, returnedValue) // send the name to the server
         } else if (address.endsWith("/number")) {
-          receive(qlabIP, 53000, numAddress, returnedValue) // send the number to the server
+          receive(qlabIP, 53001, numAddress, returnedValue) // send the number to the server
         }
         return
+      }
+
+      if (address.endsWith("/disconnect")) {
+        receive(qlabIP, 53001, "/NOTIFY", "Qlab is disconnected");
       }
 
       return {address, args, host, port}
