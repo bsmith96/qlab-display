@@ -2,20 +2,20 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 2.0.0
+ * @version 2.1.0
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v2.0.0  - New method, asking for updates rather than constantly polling Qlab
+ *   v2.1.0  - Now sends thump heartbeat to stay connected to Qlab over UDP
+ *           = Added working refresh button
  */
 
-function decodeQlabReply(args) {
-  var replyData = JSON.parse(args[0].value); // decode the JSON reply from Qlab
-  var toReturn = replyData.data; // get the cue display name from within the JSON
-  return toReturn;
-}
 
-var config = loadJSON("open-stage-control-config.json");
+/*******************************************
+ ***************  VARIABLES  ***************
+ *******************************************/
+
+var config = loadJSON("qlab-info-config.json");
 
 var nameAddress = config.address.name;
 var numAddress = config.address.number;
@@ -24,11 +24,40 @@ var qlabIP = config.QlabMain.ip;
 var workspaceID = config.QlabMain.workspaceID;
 var cueListID = config.QlabMain.cueListID;
 
+// config includes data for Backup Qlab – this has not yet been implemented
+
+
+/*******************************************
+ ***************  FUNCTIONS  ***************
+ *******************************************/
+
+function decodeQlabReply(args) {
+  var replyData = JSON.parse(args[0].value); // decode the JSON reply from Qlab
+  var toReturn = replyData.data; // get the cue display name from within the JSON
+  return toReturn;
+}
+
+// HEARTBEAT FUNCTION for staying connected over UDP. Not required if using TCP.
+function sendThump(id) {
+  const thump = "/workspace/" + id + "/thump";
+
+  setInterval(function(){
+    send(qlabIP, 53000, thump);
+  }, 60000);
+}
+
+
+/*******************************************
+ **************  MAIN ROUTINE  *************
+ *******************************************/
+
 module.exports = {
 
   // ON START, ASK QLAB FOR UPDATES
   init:function(){
     send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1);
+    // COMMENT OUT IF USING TCP
+    sendThump(workspaceID);
   },
 
   // FILTER ALL INCOMING MESSAGES
@@ -58,17 +87,24 @@ module.exports = {
 
       if (address.endsWith("/disconnect")) {
         receive(qlabIP, 53001, "/NOTIFY", "Qlab is disconnected");
+        receive(qlabIP, 53001, nameAddress, "QLAB IS DISCONNECTED");
       }
 
       return {address, args, host, port}
 
   },
 
-  // FILTER ALL OUTGOING MESSAGES - LOGS FOR DEBUGGING
+  // FILTER ALL OUTGOING MESSAGES
   oscOutFilter:function(data){
 
-    var {address, args, host, port, clientId} = data
+    var {address, args, host, port, clientId} = data;
+    
+    // Refresh button
+    if (address === "/module/refresh") {
+      send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1);
+    };
 
+    // LOG FOR DEBUGGING
     console.log("Send: " + address);
 
     return {address, args, host, port}
