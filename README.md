@@ -3,21 +3,35 @@
 [![GitHub license](https://img.shields.io/github/license/bsmith96/qlab-display.svg)](https://github.com/bsmith96/qlab-display/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/bsmith96/qlab-display.svg)](https://GitHub.com/bsmith96/qlab-display/releases/)
 
-<!--[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F120U9I)-->
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F120U9I)
 
 # Custom Module for Open Stage Control
 
-This version runs entirely within the [Open Stage Control](http://openstagecontrol.ammd.net/) software, as a 'custom module'. It also - theoretically - requires less of the Qlab computer, as it does not constantly send messages asking the current position. Instead, it prompts Qlab to give it updates when there are changes, and interprets the response appropriately.
+This version runs entirely within the [Open Stage Control](http://openstagecontrol.ammd.net/) software, as a 'custom module'. It requests updates from Qlab when there are changes to the workspace, and interprets the responses appropriately - the module ignores responses which do not relate to the playhead position of the chosen cue list.
 
-- First, open `qlab-info-config.json` and fill out the appropriate information – the Qlab IP address should be simple, and if you are using the built in template `open-stage-control-template.json` (within the `open-stage-control-module` folder) you shouldn't need to change the addresses. To find the workspace ID and Cue List ID, on your Qlab mac, run `Get-IDs.applescript`.
-- Open **Open Stage Control**. Load `Get-Playhead.config` in the Open Stage Control menu. 
-- Alternatively, Set the following settings, using files from the `open-stage-control-module` folder:
-  - **load**: select the file "open-stage-control-template.json"
-  - **custom-module**: select the file "get-display-name-from-id.js"
-  - **osc-port**: set 53001. This is the port it will listen for replies from.
-  - **port**: this is the port that the web server is served to. A useful default is 7000, but it can be anything.
+You can run the module with either a UDP or TCP connection to Qlab. If using TCP, a connection with Qlab will be maintained until it is terminated. If using UDP, you must send a thump (heartbeat) message to Qlab to maintain the connection – to enable this, at the top of the module, edit the variable `useTCP = false`.
+
+## Open Stage Control setup
+
+- First, open `qlab-info-config.json` and fill out the appropriate information
+  - The Qlab IP address should be the IP to communicate with. If it is the same computer, use `127.0.0.1`.
+  - Leave all settings under `control`, unless you are altering the Open Stage Control template.
+  - To find the workspace ID and Cue List ID, run `Get-IDs.applescript` on your Qlab mac.
+  - **NB** there are settings for MAIN and BACKUP Qlab computers - these are yet to be fully implemented, and only MAIN is currently used.
+- Open **Open Stage Control**.
+- Set the following settings in the launcher, using files from the `open-stage-control-module` folder:
+  - **load**: select the file `open-stage-control-template.json`
+  - **custom-module**: select the file `get-cue-list-playhead.js`
+  - **port**: this is the port that the web server is served to. Leave this blank to use the default 8080.
   - **no-gui**: if you do not want this open on the device which is the server, set this to true.
-- Now, click start.
+  - **IF USING UDP**
+    - **osc-port**: set 53001. This is the port it will listen for replies from.
+  - **IF USING TCP**
+    - **tcp-port**: set 53001. 
+    - **tcp-targets**: set \[Qlab IP\]:53000 (e.g. `127.0.0.1:53000`).
+- Now, click start to launch the OSC & web server.
+
+One method for using this would be loading Open Stage Control on a non-Qlab computer at FOH, so that the Sound Operator can see the display and notice if there are any issues. The remote computer for viewing can then simply navigate to the web server to view the display.
 
 # Node JS version
 
