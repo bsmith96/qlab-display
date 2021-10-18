@@ -7,7 +7,7 @@
 
 # Custom Module for Open Stage Control
 
-This version runs entirely within the Open Stage Control software, as a 'custom module'. It also - theoretically - requires less of the Qlab computer, as it does not constantly send messages asking the current position. Instead, it prompts Qlab to give it updates when there are changes, and interprets the response appropriately.
+This version runs entirely within the [Open Stage Control](http://openstagecontrol.ammd.net/) software, as a 'custom module'. It also - theoretically - requires less of the Qlab computer, as it does not constantly send messages asking the current position. Instead, it prompts Qlab to give it updates when there are changes, and interprets the response appropriately.
 
 - First, open `qlab-info-config.json` and fill out the appropriate information – the Qlab IP address should be simple, and if you are using the built in template `open-stage-control-template.json` (within the `open-stage-control-module` folder) you shouldn't need to change the addresses. To find the workspace ID and Cue List ID, on your Qlab mac, run `Get-IDs.applescript`.
 - Open **Open Stage Control**. Load `Get-Playhead.config` in the Open Stage Control menu. 
