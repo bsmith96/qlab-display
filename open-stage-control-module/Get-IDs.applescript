@@ -1,13 +1,13 @@
 -- @description Get Unique IDs for Open Stage Control monitoring
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 1.0
+-- @version 1.1
 -- @testedmacos 10.14.6
 -- @testedqlab 4.6.10
 -- @about Run this script on your Qlab mac, with Qlab open on the cue list you wish to monitor remotely. Paste the result into the "workspaceID" and "cueListID" fields of open-stage-control-config.json.
 
 -- @changelog
---   v1.0  + init
+--   v1.1  + doesn't switch to Qlab to display confirmation dialog
 
 
 tell application id "com.figure53.Qlab.4" to tell front workspace
@@ -16,6 +16,8 @@ tell application id "com.figure53.Qlab.4" to tell front workspace
 	set workspaceID to unique id
 	set cueListID to uniqueID of current cue list
 	
+end tell
+
 	-- write text to paste in config file
 	set jsonString to "\"workspaceID\":\"" & workspaceID & "\",
   \"cueListID\": \"" & cueListID & "\""
@@ -25,5 +27,3 @@ tell application id "com.figure53.Qlab.4" to tell front workspace
 	
 	-- confirm
 	display dialog jsonString with title "Copied to clipboard!"
-	
-end tell
