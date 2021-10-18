@@ -9,8 +9,10 @@
     "workspaceID":"844C6E1A-2621-4B21-BC5D-9EE6D746FCC1",
     "cueListID": "90375EE0-C014-43CE-913E-D51E563D0D54"
   },
-  "address": {
-    "name": "/next/name",
-    "number": "/next/number"
+  "control": {
+    "address": {
+      "name": "/next/name",
+      "number": "/next/number"
+    }
   }
 }

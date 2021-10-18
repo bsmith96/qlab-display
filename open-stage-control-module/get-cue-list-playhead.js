@@ -2,13 +2,23 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 2.1.0
+ * @version 2.1.1
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v2.1.0  - Now sends thump heartbeat to stay connected to Qlab over UDP
- *           = Added working refresh button
+ *   v2.1.1  - Easier user customisation between TCP and UDP connections.
+ *           - Separated template data in the config json into "control" object.
  */
+
+
+/*******************************************
+ ***********  USER CUSTOMISATION  **********
+ *******************************************/
+
+// Use TCP or UDP?
+// If false, sends thump (heartbeat) to Qlab every 20 seconds to maintain UDP connection.
+// If true, disables the thump (heartbeat) command.
+const useTCP = false;
 
 
 /*******************************************
@@ -17,8 +27,8 @@
 
 var config = loadJSON("qlab-info-config.json");
 
-var nameAddress = config.address.name;
-var numAddress = config.address.number;
+var nameAddress = config.control.address.name;
+var numAddress = config.control.address.number;
 
 var qlabIP = config.QlabMain.ip;
 var workspaceID = config.QlabMain.workspaceID;
@@ -43,7 +53,7 @@ function sendThump(id) {
 
   setInterval(function(){
     send(qlabIP, 53000, thump);
-  }, 60000);
+  }, 20000);
 }
 
 
@@ -56,8 +66,10 @@ module.exports = {
   // ON START, ASK QLAB FOR UPDATES
   init:function(){
     send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1);
-    // COMMENT OUT IF USING TCP
+
+    if (useTCP == true) {
     sendThump(workspaceID);
+    };
   },
 
   // FILTER ALL INCOMING MESSAGES
@@ -68,7 +80,6 @@ module.exports = {
       // when receiving an update with the playhead's cue id, ask for name and number
       // does not pass this message on to the server
       if (address === "/update/workspace/" + workspaceID + "/cueList/" + cueListID + "/playbackPosition") {
-          console.log(args[0].value);
           send(qlabIP, 53000, '/cue_id/' + args[0].value + '/displayName');
           send(qlabIP, 53000, '/cue_id/' + args[0].value + '/number');
           return
@@ -103,9 +114,6 @@ module.exports = {
     if (address === "/module/refresh") {
       send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1);
     };
-
-    // LOG FOR DEBUGGING
-    console.log("Send: " + address);
 
     return {address, args, host, port}
   }
