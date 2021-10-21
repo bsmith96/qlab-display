@@ -2,11 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 2.1.2
+ * @version 3.0.0-beta1
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v2.1.2  - Corrected useTCP implementation
+ *   v3.0.0-beta1  - implementation of backup Qlab switch - manual changeover
  */
 
 
@@ -30,10 +30,12 @@ var nameAddress = config.control.address.name;
 var numAddress = config.control.address.number;
 
 if (config.QlabCount = 1) {
+  var qlabCount = config.QlabCount;
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
   var cueListID = config.QlabMain.cueListID;
 } else if (config.QlabCount = 2) {
+  var qlabCount = config.QlabCount;
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
   var cueListID = config.QlabMain.cueListID;
@@ -41,6 +43,8 @@ if (config.QlabCount = 1) {
   var workspaceID_B = config.QlabBackup.workspaceID;
   var cueListID_B = config.QlabBackup.cueListID;
 };
+
+var whichQlab = "MAIN"
 
 // config includes data for Backup Qlab – this has not yet been implemented
 
@@ -64,6 +68,13 @@ function sendThump(id) {
   }, 20000);
 }
 
+// Single heartbeat command for checking connection
+function singlethump(id, ip) {
+  const thump = "/workspace/" + id + "/thump";
+
+  send(ip, 53000, thump);
+}
+
 
 /*******************************************
  **************  MAIN ROUTINE  *************
@@ -85,28 +96,56 @@ module.exports = {
 
       var {address, args, host, port} = data;
 
-      // when receiving an update with the playhead's cue id, ask for name and number
-      // does not pass this message on to the server
-      if (address === "/update/workspace/" + workspaceID + "/cueList/" + cueListID + "/playbackPosition") {
-          send(qlabIP, 53000, '/cue_id/' + args[0].value + '/displayName');
-          send(qlabIP, 53000, '/cue_id/' + args[0].value + '/number');
-          return
-      }
-      
-      // when receiving a reply with the name, interpret and send to server
-      if (address.startsWith("/reply")) {
-        var returnedValue = decodeQlabReply(args); // decode the reply to get the value requested
-        if (address.endsWith("/displayName")) {
-          receive(qlabIP, 53001, nameAddress, returnedValue) // send the name to the server
-        } else if (address.endsWith("/number")) {
-          receive(qlabIP, 53001, numAddress, returnedValue) // send the number to the server
-        }
-        return
-      }
+      if (whichQlab === "MAIN" && host === qlabIP) {
 
-      if (address.endsWith("/disconnect")) {
-        receive(qlabIP, 53001, "/NOTIFY", "Qlab is disconnected");
-        receive(qlabIP, 53001, nameAddress, "QLAB IS DISCONNECTED");
+        // when receiving an update with the playhead's cue id, ask for name and number
+        // does not pass this message on to the server
+        if (address === "/update/workspace/" + workspaceID + "/cueList/" + cueListID + "/playbackPosition") {
+          send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
+          send(host, 53000, '/cue_id/' + args[0].value + '/number');
+          return
+        }
+        
+        // when receiving a reply with the name, interpret and send to server
+        if (address.startsWith("/reply")) {
+          var returnedValue = decodeQlabReply(args); // decode the reply to get the value requested
+          if (address.endsWith("/displayName")) {
+            receive(host, 53001, nameAddress, returnedValue) // send the name to the server
+          } else if (address.endsWith("/number")) {
+            receive(host, 53001, numAddress, returnedValue) // send the number to the server
+          }
+          return
+        }
+
+        if (address.endsWith("/disconnect")) {
+          receive(host, 53001, "/NOTIFY", "Qlab is disconnected");
+          receive(host, 53001, nameAddress, "QLAB IS DISCONNECTED");
+          return
+        }
+
+      } else if (whichQlab === "BACKUP" && host === qlabIP_B) {
+
+        if (address === "/update/workspace/" + workspaceID + "/cueList/" + cueListID + "/playbackPosition") {
+          send(host, 53000, '/cue_id' + args[0].value + '/displayName');
+          send(host, 53000, '/cue_id' + args[0].value + '/number');
+          return
+        }
+
+        if (address.startsWith("/reply")) {
+          var returnedValue = decodeQlabReply(args);
+          if (address.endsWith("/displayName")) {
+            receive(host, 53001, nameAddress, returnedValue)
+          } else if (address.endsWith("/number")) {
+            receive(host, 53001, numAddress, returnedValue)
+          }
+          return
+        }
+
+        if (address.endsWith("/disconnect")) {
+          receive(host, 53001, "/NOTIFY", "Qlab is disconnected");
+          receive(host, 53001, nameAddress, "QLAB IS DISCONNECTED");
+          return
+        }
       }
 
       return {address, args, host, port}
@@ -121,7 +160,13 @@ module.exports = {
     // Refresh button
     if (address === "/module/refresh") {
       send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1);
+      send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/updates', 1);
     };
+
+    // Switch Qlab button
+    if (address === "/module/switch") {
+      whichQlab = args[0].value
+    }
 
     return {address, args, host, port}
   }
