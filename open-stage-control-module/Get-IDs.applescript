@@ -62,12 +62,7 @@ else if thisMac is "Backup" then
 	}
 }"
 else if thisMac is "Only" then
-	set jsonString to "\"QlabMain\": {
-		\"ip\": \"" & thisIP & "\",
-		\"workspaceID\": \"" & thisWorkspaceID & "\",
-		\"cueListID\": \"" & thisCueListID & "\"
-	},
-	\"QlabBackup\": {
+	set jsonString to "\"QlabOnly\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
 		\"cueListID\": \"" & thisCueListID & "\"
