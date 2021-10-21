@@ -29,9 +29,18 @@ var config = loadJSON("qlab-info-config.json");
 var nameAddress = config.control.address.name;
 var numAddress = config.control.address.number;
 
-var qlabIP = config.QlabMain.ip;
-var workspaceID = config.QlabMain.workspaceID;
-var cueListID = config.QlabMain.cueListID;
+if (config.QlabCount = 1) {
+  var qlabIP = config.QlabMain.ip;
+  var workspaceID = config.QlabMain.workspaceID;
+  var cueListID = config.QlabMain.cueListID;
+} else if (config.QlabCount = 2) {
+  var qlabIP = config.QlabMain.ip;
+  var workspaceID = config.QlabMain.workspaceID;
+  var cueListID = config.QlabMain.cueListID;
+  var qlabIP_B = config.QlabBackup.ip;
+  var workspaceID_B = config.QlabBackup.workspaceID;
+  var cueListID_B = config.QlabBackup.cueListID;
+};
 
 // config includes data for Backup Qlab – this has not yet been implemented
 
