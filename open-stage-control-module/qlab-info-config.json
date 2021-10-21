@@ -5,8 +5,9 @@
 			"number": "/next/number"
 		}
 	},
-"QlabOnly": {
-		"ip": "192.168.1.3",
+	"QlabCount": 1,
+	"QlabMain": {
+		"ip": "127.0.0.1",
 		"workspaceID": "8C1A8133-1052-4E78-94B6-56A5CE556280",
 		"cueListID": "B75D0623-6478-4EAC-BE00-217E983E66DB"
 	}

@@ -48,7 +48,8 @@ end tell
 
 -- format for JSON
 if thisMac is "Main" then
-	set jsonString to "\"QlabMain\": {
+	set jsonString to "	\"QlabCount\": 2,
+	\"QlabMain\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
 		\"cueListID\": \"" & thisCueListID & "\"
@@ -62,7 +63,8 @@ else if thisMac is "Backup" then
 	}
 }"
 else if thisMac is "Only" then
-	set jsonString to "\"QlabOnly\": {
+	set jsonString to "	\"QlabCount\": 1,
+	\"QlabMain\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
 		\"cueListID\": \"" & thisCueListID & "\"
