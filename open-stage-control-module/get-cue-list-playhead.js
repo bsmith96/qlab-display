@@ -68,13 +68,6 @@ function sendThump(id) {
   }, 20000);
 }
 
-// Single heartbeat command for checking connection
-function singlethump(id, ip) {
-  const thump = "/workspace/" + id + "/thump";
-
-  send(ip, 53000, thump);
-}
-
 
 /*******************************************
  **************  MAIN ROUTINE  *************
