@@ -110,16 +110,29 @@ If you are using the included template, `open-stage-control-template.json`, try 
 
 To use this method, the cue list you wish to monitor must have a cue number. e.g., for "Click Tracks", you might number the cue list "CLICK".
 
-## Screenshots
+# Screenshots
+
+## Open Stage Control Custom Module
+
+### Launching Open Stage Control Module (using TCP)
+![Launching Open Stage Control Module (TCP)](_images/A_Open_Stage_Control_Module_Launcher.png)
+
+### Open Stage Control Module
+![Open Stage Control Module](_images/B_Open_Stage_Control_Module.png)
+
+### Module disconnected from Qlab
+![Open Stage Control Module](_images/C_Open_Stage_Control_Disconnected.png)
+
+## Node.js Version
 
 ### Launching the script from the macOS terminal
-![Launching the script from macOS terminal](https://github.com/bsmith96/qlab-display/blob/88a575394aa7cfd73a8b2e9f0469c437339c826e/_images/1%20Launch%20from%20terminal.png)
+![Launching the script from macOS terminal](_images/D_Node_Launch_From_Terminal.png)
 
 ### Setting custom options when launching the script from the macOS terminal
-![Launching the script with custom options](https://github.com/bsmith96/qlab-display/blob/88a575394aa7cfd73a8b2e9f0469c437339c826e/_images/2%20Set%20options%20from%20terminal.png)
+![Launching the script with custom options](_images/E_Node_Set_Options_From_Terminal.png)
 
 ### The Qlab Display working in Open Stage Control
-![Qlab Display in Open Stage Control](https://github.com/bsmith96/qlab-display/blob/d455d86049b6652e5e1927ed41af07260de47376/_images/3%20Open%20Stage%20Control%20display.png)
+![Qlab Display in Open Stage Control](_images/F_Node_Open_Stage_Control_Display.png)
 
 ### Qlab Display when Qlab has disconnected
-![Qlab Display when disconnected](https://github.com/bsmith96/qlab-display/blob/d455d86049b6652e5e1927ed41af07260de47376/_images/4%20Disconnected%20display.png)
+![Qlab Display when disconnected](_images/G_Node_Open_Stage_Control_Disconnected.png)
