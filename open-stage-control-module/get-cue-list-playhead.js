@@ -2,11 +2,16 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 3.0.0-beta1
+ * @version 3.0.0-beta2
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v3.0.0-beta1  - implementation of backup Qlab switch - manual changeover
+ *   v3.0.0-beta2  - implementation of backup Qlab switch - manual changeover
+ *                 - on startup and refresh, asks for current position (so you don't have to change it to get an update)
+ *                 - when using UDP, now thumps both Qlabs rather than only the Main
+ *                 - NB currently starts a TCP connection with both Qlabs permanently, not just when switched.
+ *                   the switch only affects what information gets *displayed*.
+ *                   due to the way OSC works, this should mean messages to a crashed computer are simply ignored.
  */
 
 
@@ -60,11 +65,11 @@ function decodeQlabReply(args) {
 }
 
 // HEARTBEAT FUNCTION for staying connected over UDP. Not required if using TCP.
-function sendThump(id) {
+function sendThump(id, ip) {
   const thump = "/workspace/" + id + "/thump";
 
   setInterval(function(){
-    send(qlabIP, 53000, thump);
+    send(ip, 53000, thump);
   }, 20000);
 }
 
@@ -75,12 +80,22 @@ function sendThump(id) {
 
 module.exports = {
 
-  // ON START, ASK QLAB FOR UPDATES
+  // ON START, ASK QLAB FOR UPDATES & CURRENT POSITION
   init:function(){
+    // Ask for updates from both Qlabs
     send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1);
+    send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/updates', 1);
 
+    // Ask for current playhead position after 2 seconds
+    setTimeout(function(){
+      send(qlabIP, 53000, '/workspace/' + workspaceID + '/cue_id/' + cueListID + '/playheadId');
+      send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/cue_id/' + cueListID_B + '/playheadId');
+    }, 2000);
+
+    // Start a heartbeat if using UDP connection
     if (useTCP == false) {
-    sendThump(workspaceID);
+      sendThump(workspaceID, qlabIP);
+      sendThump(workspaceID_B, qlabIP_B);
     };
   },
 
@@ -89,13 +104,19 @@ module.exports = {
 
       var {address, args, host, port} = data;
 
+      // ##FIXME## -- Split into external module and call it twice, for main and backup?
       if (whichQlab === "MAIN" && host === qlabIP) {
 
         // when receiving an update with the playhead's cue id, ask for name and number
         // does not pass this message on to the server
-        if (address === "/update/workspace/" + workspaceID + "/cueList/" + cueListID + "/playbackPosition") {
+        if (address === "/update/workspace/" + workspaceID + "/cueList/" + cueListID + "/playbackPosition") { // updates
           send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
           send(host, 53000, '/cue_id/' + args[0].value + '/number');
+          return
+        } else if (address.endsWith('/playheadId')) { // replies to direcr requests (startup and "refresh")
+          var returnedValue = decodeQlabReply(args);
+          send(host, 53000, '/cue_id/' + returnedValue + '/displayName');
+          send(host, 53000, '/cue_id/' + returnedValue + '/number');
           return
         }
         
@@ -110,33 +131,45 @@ module.exports = {
           return
         }
 
+        // notify if Qlab disconnects from a TCP connection
         if (address.endsWith("/disconnect")) {
           receive(host, 53001, "/NOTIFY", "Qlab is disconnected");
           receive(host, 53001, nameAddress, "QLAB IS DISCONNECTED");
+          receive(host, 53001, numAddress, "");
           return
         }
 
       } else if (whichQlab === "BACKUP" && host === qlabIP_B) {
 
-        if (address === "/update/workspace/" + workspaceID + "/cueList/" + cueListID + "/playbackPosition") {
-          send(host, 53000, '/cue_id' + args[0].value + '/displayName');
-          send(host, 53000, '/cue_id' + args[0].value + '/number');
+        // when receiving an update with the playhead's cue id, ask for name and number
+        // does not pass this message on to the server
+        if (address === "/update/workspace/" + workspaceID + "/cueList/" + cueListID + "/playbackPosition") { // updates
+          send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
+          send(host, 53000, '/cue_id/' + args[0].value + '/number');
+          return
+        } else if (address.endsWith('/playheadId')) { // replies to direcr requests (startup and "refresh")
+          var returnedValue = decodeQlabReply(args);
+          send(host, 53000, '/cue_id/' + returnedValue + '/displayName');
+          send(host, 53000, '/cue_id/' + returnedValue + '/number');
           return
         }
-
+        
+        // when receiving a reply with the name, interpret and send to server
         if (address.startsWith("/reply")) {
-          var returnedValue = decodeQlabReply(args);
+          var returnedValue = decodeQlabReply(args); // decode the reply to get the value requested
           if (address.endsWith("/displayName")) {
-            receive(host, 53001, nameAddress, returnedValue)
+            receive(host, 53001, nameAddress, returnedValue) // send the name to the server
           } else if (address.endsWith("/number")) {
-            receive(host, 53001, numAddress, returnedValue)
+            receive(host, 53001, numAddress, returnedValue) // send the number to the server
           }
           return
         }
 
+        // notify if Qlab disconnects from a TCP connection
         if (address.endsWith("/disconnect")) {
           receive(host, 53001, "/NOTIFY", "Qlab is disconnected");
           receive(host, 53001, nameAddress, "QLAB IS DISCONNECTED");
+          receive(host, 53001, numAddress, "");
           return
         }
       }
@@ -152,13 +185,20 @@ module.exports = {
     
     // Refresh button
     if (address === "/module/refresh") {
+      // Ask for updates from both Qlabs
       send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1);
       send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/updates', 1);
+
+      // Ask for current playhead position
+      send(qlabIP, 53000, '/workspace/' + workspaceID + '/cue_id/' + cueListID + '/playheadId');
+      send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/cue_id/' + cueListID_B + '/playheadId');
+      return
     };
 
-    // Switch Qlab button
+    // Switch Qlab button ##FIXME## -- get current playhead on switch
     if (address === "/module/switch") {
       whichQlab = args[0].value
+      return
     }
 
     return {address, args, host, port}
