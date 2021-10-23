@@ -2,11 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 3.0.0-beta2
+ * @version 3.0.0-beta3
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v3.0.0-beta2  - implementation of backup Qlab switch - manual changeover
+ *   v3.0.0-beta3  - implementation of backup Qlab switch - manual changeover
  *                 - on startup and refresh, asks for current position (so you don't have to change it to get an update)
  *                 - when using UDP, now thumps both Qlabs rather than only the Main
  *                 - NB currently starts a TCP connection with both Qlabs permanently, not just when switched.
@@ -34,7 +34,7 @@ var config = loadJSON("qlab-info-config.json");
 var nameAddress = config.control.address.name;
 var numAddress = config.control.address.number;
 
-if (config.QlabCount = 1) {
+if (config.QlabCount = 1) { // ##FIXME## get primary first then only get backup if QlabCount is 2
   var qlabCount = config.QlabCount;
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
@@ -50,8 +50,6 @@ if (config.QlabCount = 1) {
 };
 
 var whichQlab = "MAIN"
-
-// config includes data for Backup Qlab – this has not yet been implemented
 
 
 /*******************************************
@@ -143,11 +141,11 @@ module.exports = {
 
         // when receiving an update with the playhead's cue id, ask for name and number
         // does not pass this message on to the server
-        if (address === "/update/workspace/" + workspaceID + "/cueList/" + cueListID + "/playbackPosition") { // updates
+        if (address === "/update/workspace/" + workspaceID_B + "/cueList/" + cueListID_B + "/playbackPosition") { // updates
           send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
           send(host, 53000, '/cue_id/' + args[0].value + '/number');
           return
-        } else if (address.endsWith('/playheadId')) { // replies to direcr requests (startup and "refresh")
+        } else if (address.endsWith('/playheadId')) { // replies to direct requests (startup and "refresh")
           var returnedValue = decodeQlabReply(args);
           send(host, 53000, '/cue_id/' + returnedValue + '/displayName');
           send(host, 53000, '/cue_id/' + returnedValue + '/number');
@@ -195,9 +193,15 @@ module.exports = {
       return
     };
 
-    // Switch Qlab button ##FIXME## -- get current playhead on switch
+    // Switch Qlab button
     if (address === "/module/switch") {
       whichQlab = args[0].value
+
+      if (whichQlab === "MAIN") {
+        send(qlabIP, 53000, '/workspace/' + workspaceID + '/cue_id/' + cueListID + '/playheadId');
+      } else if (whichQlab === "BACKUP") {
+        send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/cue_id/' + cueListID_B + '/playheadId');
+      }
       return
     }
 
