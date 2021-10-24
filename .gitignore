@@ -104,4 +104,4 @@ dist
 .tern-port
 
 # config file
-qlab-info-config.json
+open-stage-control-module/qlab-info-config.json
