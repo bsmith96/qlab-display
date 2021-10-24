@@ -76,8 +76,7 @@ end getRootFolder
 on getIP()
 	try
 		set theReturned to (do shell script "ifconfig | grep inet | grep -v inet6 | cut -d\" \" -f2")
-		set theIPs to splitString(theReturned, "
-")
+		set theIPs to splitString(theReturned, "")
 	on error
 		set theIPs to {"Can't get Local IP"}
 	end try
