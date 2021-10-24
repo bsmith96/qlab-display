@@ -103,4 +103,4 @@ dist
 # TernJS port file
 .tern-port
 
-qlab-info-config.json
+/open-stage-control-module/qlab-info-config.json
