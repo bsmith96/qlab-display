@@ -7,6 +7,7 @@
  * 
  * @changelog
  *   v3.0.0-beta5  - split interpreting into separate function
+ *                 - split init into separate function
  *                 - implement "only" qlab
  *   v3.0.0-beta4  - implementation of backup Qlab switch - manual changeover
  *                 - on startup and refresh, asks for current position (so you don't have to change it to get an update)
@@ -47,9 +48,9 @@ if (config.QlabCount == 2) {
   var cueListID_B = config.QlabBackup.cueListID;
 };
 
-var qlabMain = {workspaceID, cueListID, qlabIP};
-var qlabBackup = {workspaceID_B, cueListID_B, qlabIP_B};
-var qlabOnly = {workspaceID, cueListID, qlabIP};
+var qlabMain = [workspaceID, cueListID, qlabIP];
+var qlabBackup = [workspaceID_B, cueListID_B, qlabIP_B];
+var qlabOnly = [workspaceID, cueListID, qlabIP];
 
 
 if (config.QlabCount == 1) {
@@ -81,29 +82,26 @@ function sendThump(id, ip) {
 // Initial function on module load
 function onInit(qlab) {
 
-  var {theWorkspace, theCueList, theIP} = qlab;
+  var [theWorkspace, theCueList, theIP] = qlab;
 
   // ask for updates
   send(theIP, 53000, '/workspace/' + theWorkspace + '/updates', 1);
 
   // ask for current position, once loaded
-  setTimeout(function(){
-    send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
-    console.log(useTCP);
-  }, 2000);
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
 
   // activate heartbeat if required
   if (useTCP == false) {
     sendThump(theWorkspace, theIP);
   };
 
-}
+};
 
 // Interpret incoming
 function interpretIncoming(data, qlab) {
 
-  var {address, args, host, port} = data
-  var {theWorkspace, theCueList, theIP} = qlab
+  var {address, args, host, port} = data;
+  var [theWorkspace, theCueList, theIP] = qlab;
 
   // when receiving an update with the playhead's cue id, ask for name and number
   // does not pass this message on to the server
@@ -148,11 +146,14 @@ module.exports = {
   // ON START, ASK QLAB FOR UPDATES & CURRENT POSITION
   init:function(){
 
-    if (whichQlab == "ONLY") {
-      onInit(qlabOnly);
-    } else if (whichQlab == "MAIN") {
-      onInit(qlabMain);
-    }
+    setTimeout(function(){
+      if (whichQlab == "ONLY") {
+        onInit(qlabOnly);
+      } else if (whichQlab = "MAIN") {
+        onInit(qlabMain);
+        onInit(qlabBackup);
+      }
+    }, 2000)
 
   },
 
@@ -161,9 +162,7 @@ module.exports = {
 
       var {address, args, host, port} = data;
 
-      // ##FIXME## -- Split into external module and call it twice, for main and backup?
       if (whichQlab === "MAIN" && host === qlabIP) {
-
         interpretIncoming(data, qlabMain);
         return
 
