@@ -212,7 +212,7 @@
         "value": "",
         "default": "",
         "linkId": "",
-        "address": "/module/switch",
+        "address": "/module/changeover",
         "preArgs": "",
         "typeTags": "",
         "decimals": 2,

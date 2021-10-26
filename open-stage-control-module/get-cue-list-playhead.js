@@ -2,10 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 3.0.0-beta5
+ * @version 3.0.0-beta6
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
+ *   v3.0.0-beta6  - hide button to switch to backup if only a single qlab machine is in use
  *   v3.0.0-beta5  - split interpreting into separate function
  *                 - split init into separate function
  *                 - implement "only" qlab
@@ -42,21 +43,23 @@ var qlabIP = config.QlabMain.ip;
 var workspaceID = config.QlabMain.workspaceID;
 var cueListID = config.QlabMain.cueListID;
 
+// backup, if required
 if (config.QlabCount == 2) {
   var qlabIP_B = config.QlabBackup.ip;
   var workspaceID_B = config.QlabBackup.workspaceID;
   var cueListID_B = config.QlabBackup.cueListID;
 };
 
+// arrays for functions
 var qlabMain = [workspaceID, cueListID, qlabIP];
 var qlabBackup = [workspaceID_B, cueListID_B, qlabIP_B];
 var qlabOnly = [workspaceID, cueListID, qlabIP];
 
-
+// variable for backup changeover
 if (config.QlabCount == 1) {
-  var whichQlab = "ONLY"
+  var whichQlab = 'ONLY'
 } else if (config.QlabCount == 2) {
-  var whichQlab = "MAIN"
+  var whichQlab = 'MAIN'
 }
 
 
@@ -72,7 +75,7 @@ function decodeQlabReply(args) {
 
 // HEARTBEAT FUNCTION for staying connected over UDP. Not required if using TCP.
 function sendThump(id, ip) {
-  const thump = "/workspace/" + id + "/thump";
+  const thump = '/workspace/' + id + '/thump';
 
   setInterval(function(){
     send(ip, 53000, thump);
@@ -87,7 +90,7 @@ function onInit(qlab) {
   // ask for updates
   send(theIP, 53000, '/workspace/' + theWorkspace + '/updates', 1);
 
-  // ask for current position, once loaded
+  // ask for current position
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
 
   // activate heartbeat if required
@@ -97,7 +100,33 @@ function onInit(qlab) {
 
 };
 
-// Interpret incoming
+// Hide backup button if using only a single Qlab Machine
+function deactivateBackup() {
+  receive('/EDIT', 'BACKUP', {'visible':false});
+  receive('/EDIT', 'REFRESH', {'css':'width: 260rem; left: calc(98% - 260rem);'});
+  receive('/SESSION/SAVE');
+}
+
+function activateBackup() {
+  receive('/EDIT', 'BACKUP', {'visible':true});
+  receive('/EDIT', 'REFRESH', {'css':'width: 130rem; left: calc(98% - 260rem);'});
+  receive('/SESSION/SAVE');
+}
+
+// Refresh qlab
+function onRefresh(qlab) {
+
+  var [theWorkspace, theCueList, theIP] = qlab;
+
+  // ask for updates
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/updates', 1);
+
+  // ask for current position
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
+
+}
+
+// Interpret incoming messages
 function interpretIncoming(data, qlab) {
 
   var {address, args, host, port} = data;
@@ -105,11 +134,11 @@ function interpretIncoming(data, qlab) {
 
   // when receiving an update with the playhead's cue id, ask for name and number
   // does not pass this message on to the server
-  if (address === "/update/workspace/" + theWorkspace + "/cueList/" + theCueList + "/playbackPosition") { // updates
+  if (address === '/update/workspace/' + theWorkspace + '/cueList/' + theCueList + '/playbackPosition') { // updates
     send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
     send(host, 53000, '/cue_id/' + args[0].value + '/number');
     return
-  } else if (address.endsWith('/playheadId')) { // replies to direcr requests (startup and "refresh")
+  } else if (address.endsWith('/playheadId')) { // replies to direct requests (startup, refresh, and changeover)
     var returnedValue = decodeQlabReply(args);
     send(host, 53000, '/cue_id/' + returnedValue + '/displayName');
     send(host, 53000, '/cue_id/' + returnedValue + '/number');
@@ -117,21 +146,21 @@ function interpretIncoming(data, qlab) {
   }
   
   // when receiving a reply with the name, interpret and send to server
-  if (address.startsWith("/reply")) {
+  if (address.startsWith('/reply')) {
     var returnedValue = decodeQlabReply(args); // decode the reply to get the value requested
-    if (address.endsWith("/displayName")) {
+    if (address.endsWith('/displayName')) {
       receive(host, 53001, nameAddress, returnedValue) // send the name to the server
-    } else if (address.endsWith("/number")) {
+    } else if (address.endsWith('/number')) {
       receive(host, 53001, numAddress, returnedValue) // send the number to the server
     }
     return
   }
 
   // notify if Qlab disconnects from a TCP connection
-  if (address.endsWith("/disconnect")) {
-    receive(host, 53001, "/NOTIFY", "Qlab is disconnected");
-    receive(host, 53001, nameAddress, "QLAB IS DISCONNECTED");
-    receive(host, 53001, numAddress, "");
+  if (address.endsWith('/disconnect')) {
+    receive(host, 53001, '/NOTIFY', 'Qlab is disconnected');
+    receive(host, 53001, nameAddress, 'QLAB IS DISCONNECTED');
+    receive(host, 53001, numAddress, '');
     return
   }
 }
@@ -147,11 +176,13 @@ module.exports = {
   init:function(){
 
     setTimeout(function(){
-      if (whichQlab == "ONLY") {
+      if (whichQlab === 'ONLY') {
         onInit(qlabOnly);
-      } else if (whichQlab = "MAIN") {
+        deactivateBackup();
+      } else if (whichQlab === 'MAIN') {
         onInit(qlabMain);
         onInit(qlabBackup);
+        activateBackup();
       }
     }, 2000)
 
@@ -162,20 +193,15 @@ module.exports = {
 
       var {address, args, host, port} = data;
 
-      if (whichQlab === "MAIN" && host === qlabIP) {
+      if (whichQlab === 'MAIN' && host === qlabIP) {
         interpretIncoming(data, qlabMain);
         return
-
-      } else if (whichQlab === "BACKUP" && host === qlabIP_B) {
-
+      } else if (whichQlab === 'BACKUP' && host === qlabIP_B) {
         interpretIncoming(data, qlabBackup);
         return
-
-      } else if (whichQlab === "ONLY" && host === qlabIP) {
-
+      } else if (whichQlab === 'ONLY' && host === qlabIP) {
         interpretIncoming(data, qlabOnly);
         return
-
       }
 
       return {address, args, host, port}
@@ -187,25 +213,25 @@ module.exports = {
 
     var {address, args, host, port, clientId} = data;
     
-    // Refresh button
-    if (address === "/module/refresh") {
-      // Ask for updates from both Qlabs
-      send(qlabIP, 53000, '/workspace/' + workspaceID + '/updates', 1);
-      send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/updates', 1);
-
-      // Ask for current playhead position
-      send(qlabIP, 53000, '/workspace/' + workspaceID + '/cue_id/' + cueListID + '/playheadId');
-      send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/cue_id/' + cueListID_B + '/playheadId');
+    // Refresh button - does NOT restart heartbeat, as it presumes this is still running from startup
+    if (address === '/module/refresh') {
+      if (whichQlab === "ONLY") {
+        onRefresh(qlabOnly);
+      } else if (whichQlab === 'MAIN') {
+        onRefresh(qlabMain);
+      } else if (whichQlab === 'BACKUP') {
+        onRefresh(qlabBackup);
+      }
       return
     };
 
     // Switch Qlab button
-    if (address === "/module/switch") {
+    if (address === '/module/changeover') {
       whichQlab = args[0].value
 
-      if (whichQlab === "MAIN") {
+      if (whichQlab === 'MAIN') {
         send(qlabIP, 53000, '/workspace/' + workspaceID + '/cue_id/' + cueListID + '/playheadId');
-      } else if (whichQlab === "BACKUP") {
+      } else if (whichQlab === 'BACKUP') {
         send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/cue_id/' + cueListID_B + '/playheadId');
       }
       return
