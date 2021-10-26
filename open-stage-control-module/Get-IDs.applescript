@@ -8,24 +8,11 @@
 --     Store this script in the directory you will be running the Open Stage Control custom module from, on that computer
 --     Using remote file accesss over the network, open and run the script in script editor on your Main and Backup Qlab macs
 --     Ensure QLab is open, and the current cue list is the one you wish to monitor
---     It will write to a config file to the root location
+--     It will write to a config file in the root location
 -- @separateprocess TRUE
 
 -- @changelog
 --   v2.0  + writes config automatically
-
-
--- USER DEFINED VARIABLES -----------------
-
----------- END OF USER DEFINED VARIABLES --
-
-
--- VARIABLES FROM QLAB NOTES --------------
-
------------------- END OF QLAB VARIABLES --
-
-
-property util : script "Applescript Utilities"
 
 
 ---- RUN SCRIPT ---------------------------
@@ -75,6 +62,7 @@ end if
 -- write to config file
 writeToConfig(jsonString)
 
+
 -- FUNCTIONS ------------------------------
 
 on getRootFolder()
@@ -88,7 +76,7 @@ end getRootFolder
 on getIP()
 	try
 		set theReturned to (do shell script "ifconfig | grep inet | grep -v inet6 | cut -d\" \" -f2")
-		set theIPs to util's splitString(theReturned, "")
+		set theIPs to splitString(theReturned, "")
 	on error
 		set theIPs to {"Can't get Local IP"}
 	end try
@@ -153,3 +141,16 @@ on readFile(theFile)
 		return "error"
 	end try
 end readFile
+
+on splitString(theString, theDelimiter)
+	-- save delimiters to restore old settings
+	set oldDelimiters to AppleScript's text item delimiters
+	-- set delimiters to delimiter to be used
+	set AppleScript's text item delimiters to theDelimiter
+	-- create the array
+	set theArray to every text item of theString
+	-- restore old setting
+	set AppleScript's text item delimiters to oldDelimiters
+	-- return the array
+	return theArray
+end splitString
