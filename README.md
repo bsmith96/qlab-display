@@ -9,15 +9,19 @@
 
 This version runs entirely within the [Open Stage Control](http://openstagecontrol.ammd.net/) software, as a 'custom module'. It requests updates from Qlab when there are changes to the workspace, and interprets the responses appropriately - the module ignores responses which do not relate to the playhead position of the chosen cue list.
 
-You can run the module with either a UDP or TCP connection to Qlab. If using TCP, a connection with Qlab will be maintained until it is terminated. If using UDP, you must send a thump (heartbeat) message to Qlab to maintain the connection – to enable this, at the top of the module, edit the variable `useTCP = false`.
+You can run the module with either a UDP or TCP connection to Qlab. I recommend using TCP, as this maintains a permanent connection to Qlab, increasing reliability, but with minimal CPU overhead. If you wish to use UDP, you must send a thump (heartbeat) message to Qlab to maintain the connection – to enable this, at the top of the module, edit the variable `useTCP = false`.
 
 ## Open Stage Control setup
 
-- First, open `qlab-info-config.json` and fill out the appropriate information
-  - The Qlab IP address should be the IP to communicate with. If it is the same computer, use `127.0.0.1`.
-  - Leave all settings under `control`, unless you are altering the Open Stage Control template.
-  - To find the workspace ID and Cue List ID, run `Get-IDs.applescript` on your Qlab mac.
-  - **NB** there are settings for MAIN and BACKUP Qlab computers - these are yet to be fully implemented, and only MAIN is currently used.
+- First, put the 'open-stage-control-module' folder on the computer you wish to run the server from. Ensure this is on the network, and file sharing is enabled.
+- Then, on your Qlab computer, navigate to the folder over the network and open 'Get-IDs.applescript' in script editor.
+  - Ensure your Qlab file is open, the front-most Qlab file if there are multiple, and that the current cue list is the one you wish to monitor.
+  - Run the 'Get-IDs' script - this will create 'qlab-info-config.json' in the root folder.
+  - The first dialog box asks you to define the Qlab computer
+    - If you only have a single Qlab computer, select "Only" when prompted to define this Qlab machine.
+    - If you have a main and a backup Qlab computer, run this script first on the "Main", then repeat this process on the "Backup", and the script will append the necessary information on the end of the config file.
+  - The second dialog box asks you which local IP address you wish to use. If your computer is on multiple networks, e.g. a control network and a [Dante](https://www.audinate.com/meet-dante/what-is-dante) network, this allows you to select the correct one.
+  - Settings for Backup computers are not used in the current release, but will be implemented in an imminent release.
 - Open **Open Stage Control**.
 - Set the following settings in the launcher, using files from the `open-stage-control-module` folder:
   - **load**: select the file `open-stage-control-template.json`
@@ -26,9 +30,11 @@ You can run the module with either a UDP or TCP connection to Qlab. If using TCP
   - **no-gui**: if you do not want this open on the device which is the server, set this to true.
   - **IF USING UDP**
     - **osc-port**: set 53001. This is the port it will listen for replies from.
+    - Ensure you also edit the variable useTCP to "false" in `get-cue-list-playhead.js`
   - **IF USING TCP**
     - **tcp-port**: set 53001. 
-    - **tcp-targets**: set \[Qlab IP\]:53000 (e.g. `127.0.0.1:53000`).
+    - **tcp-targets**: set \[Qlab IP\]:53000 (e.g. `127.0.0.1:53000`). If using backup as well, separate the two settings with a space.
+    - Leave the variable useTCP as "true" in `get-cue-list-playhead.js`
 - Now, click start to launch the OSC & web server.
 
 One method for using this would be loading Open Stage Control on a non-Qlab computer at FOH, so that the Sound Operator can see the display and notice if there are any issues. The remote computer for viewing can then simply navigate to the web server to view the display.
