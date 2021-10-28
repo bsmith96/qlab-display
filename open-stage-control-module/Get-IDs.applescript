@@ -1,7 +1,7 @@
 -- @description Get Unique IDs for Open Stage Control monitoring
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 2.0
+-- @version 2.1
 -- @testedmacos 10.14.6
 -- @testedqlab 4.6.10
 -- @about 
@@ -12,7 +12,8 @@
 -- @separateprocess TRUE
 
 -- @changelog
---   v2.0  + writes config automatically
+--   v2.1  + prompts user to select cue list
+--         + alerts the user if they try to configure the backup qlab mac first
 
 
 ---- RUN SCRIPT ---------------------------
@@ -20,16 +21,22 @@
 -- determine if this computer is MAIN or BACKUP
 set thisMac to (choose from list {"Main", "Backup", "Only"} with title "Which QLab mac is this?") as string
 
+checkMain(thisMac)
+
+-- get the cue list to use
+set theCueLists to getCueLists()
+set thisCueList to chooseOption(theCueLists, "cue list")
+
 -- get IP address of this computer
 set listIPs to getIP()
-set thisIP to chooseIP(listIPs)
+set thisIP to chooseOption(listIPs, "IP address")
 
 -- get QLab and Cue List info
 tell application id "com.figure53.Qlab.4" to tell front workspace
 	
 	-- get unique IDs
 	set thisWorkspaceID to unique id
-	set thisCueListID to uniqueID of current cue list
+	set thisCueListID to uniqueID of (first cue list whose q name is thisCueList)
 	
 end tell
 
@@ -43,7 +50,7 @@ if thisMac is "Main" then
 	},
 "
 else if thisMac is "Backup" then
-	set jsonString to "\"QlabBackup\": {
+	set jsonString to "  \"QlabBackup\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
 		\"cueListID\": \"" & thisCueListID & "\"
@@ -73,6 +80,22 @@ on getRootFolder()
 	end tell
 end getRootFolder
 
+on getCueLists()
+	tell application id "com.figure53.Qlab.4" to tell front workspace
+		
+		set theCueLists to every cue list
+		
+		set theCueListNames to {}
+		
+		repeat with eachList in theCueLists
+			set end of theCueListNames to q display name of eachList
+		end repeat
+		
+		return theCueListNames
+		
+	end tell
+end getCueLists
+
 on getIP()
 	try
 		set theReturned to (do shell script "ifconfig | grep inet | grep -v inet6 | cut -d\" \" -f2")
@@ -83,10 +106,10 @@ on getIP()
 	return theIPs
 end getIP
 
-on chooseIP(theIPs)
-	set theIP to (choose from list theIPs with prompt "Choose which IP to use") as string
-	return theIP
-end chooseIP
+on chooseOption(theList, theName)
+	set theOption to (choose from list theList with prompt "Choose " & theName) as string
+	return theOption
+end chooseOption
 
 on checkConfig()
 	set configFile to ((getRootFolder() as text) & "qlab-info-config.json")
@@ -106,6 +129,15 @@ on checkConfig()
 	end if
 	return configFile
 end checkConfig
+
+on checkMain(thisMac)
+	set configFile to ((getRootFolder() as text) & "qlab-info-config.json")
+	set configContents to readFile(configFile)
+	if configContents is "error" and thisMac is "Backup" then
+		display dialog "Please run this script on the Main Qlab first"
+		error -128
+	end if
+end checkMain
 
 on writeToConfig(theText)
 	set configFile to checkConfig()

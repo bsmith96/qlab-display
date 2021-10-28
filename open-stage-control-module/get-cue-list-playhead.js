@@ -2,10 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 3.0.0-beta6
+ * @version 3.0.0-beta7
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
+ *   v3.0.0-beta7  - refreshes MAIN and BACKUP together
  *   v3.0.0-beta6  - hide button to switch to backup if only a single qlab machine is in use
  *   v3.0.0-beta5  - split interpreting into separate function
  *                 - split init into separate function
@@ -217,9 +218,8 @@ module.exports = {
     if (address === '/module/refresh') {
       if (whichQlab === "ONLY") {
         onRefresh(qlabOnly);
-      } else if (whichQlab === 'MAIN') {
+      } else if (whichQlab === 'MAIN' || whichQlab === 'BACKUP') {
         onRefresh(qlabMain);
-      } else if (whichQlab === 'BACKUP') {
         onRefresh(qlabBackup);
       }
       return
