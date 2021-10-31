@@ -2,22 +2,12 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 3.0.0-beta7
+ * @version 3.0.0
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v3.0.0-beta7  - refreshes MAIN and BACKUP together
- *   v3.0.0-beta6  - hide button to switch to backup if only a single qlab machine is in use
- *   v3.0.0-beta5  - split interpreting into separate function
- *                 - split init into separate function
- *                 - implement "only" qlab
- *   v3.0.0-beta4  - implementation of backup Qlab switch - manual changeover
- *                 - on startup and refresh, asks for current position (so you don't have to change it to get an update)
- *                 - when using UDP, now thumps both Qlabs rather than only the Main
- *                 - NB currently starts a TCP connection with both Qlabs permanently, not just when switched.
- *                   the switch only affects what information gets *displayed*.
- *                   due to the way OSC works, this should mean messages to a crashed computer are simply ignored.
- *                 - fix "if" statements in setting Backup info as variables
+ *   v3.0.0  - implements a system to display both Main and Backup Qlab playhead positions
+ *           - manual switchover, which can be controlled from one client and all will switch
  */
 
 
