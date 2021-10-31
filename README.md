@@ -9,28 +9,20 @@
 
 This version runs entirely within the [Open Stage Control](http://openstagecontrol.ammd.net/) software, as a 'custom module'. It requests updates from Qlab when there are changes to the workspace, and interprets the responses appropriately - the module ignores responses which do not relate to the playhead position of the chosen cue list.
 
-You can run the module with either a UDP or TCP connection to Qlab. If using TCP, a connection with Qlab will be maintained until it is terminated. If using UDP, you must send a thump (heartbeat) message to Qlab to maintain the connection – to enable this, at the top of the module, edit the variable `useTCP = false`.
+You can run the module with either a UDP or TCP connection to Qlab. I recommend using TCP, as this maintains a permanent connection to Qlab, increasing reliability, but with minimal CPU overhead. If you wish to use UDP, you must send a thump (heartbeat) message to Qlab to maintain the connection – to enable this, at the top of the module, edit the variable `useTCP = false`.
 
 ## Open Stage Control setup
 
-- Store the entire `open-stage-control-module` folder on the computer which will be running Open Stage Control. Ensure you can connect to this folder over the network.
-- If using only one Qlab mac:
-  - On the Qlab Mac, with your Qlab file open, navigate to that folder.
-  - Open "Get-IDs.applescript" in script editor, and run it.
-    - Select "Only" when prompted as to which Qlab mac this is.
-    - Select the appropriate IP address. If you are running Open Stage Control on the same computer as Qlab, select "127.0.0.1". If not, select the appropriate network connection – e.g. use the control network, rather than the Dante network.
-    - Select the appropriate Cue List from Qlab.
-- If using Main and Backup Qlab macs:
-  - On the Main Qlab Mac, with your Qlab file open, navigate to that folder.
-  - Open "Get-IDs.applescript" in the script editor, and run it.
-    - Select "Main" when prompted as to which Qlab mac this is.
-    - Select the appropriate IP address. If you are running Open Stage Control on the same computer as Qlab, select "127.0.0.1". If not, select the appropriate network connection – e.g. use the control network, rather than the Dante network.
-    - Select the appropriate Cue List from Qlab.
-  - On the Backup Qlab Mac, with your Qlab file open, navigate to that folder.
-  - Open "Get-IDs.applescript" in the script editor, and run it.
-    - Select "Backup" when prompted as to which Qlab mac this is.
-    - Select the appropriate IP address. If you are running Open Stage Control on the same computer as Qlab, select "127.0.0.1". If not, select the appropriate network connection – e.g. use the control network, rather than the Dante network.
-    - Select the appropriate Cue List from Qlab.
+- First, put the 'open-stage-control-module' folder on the computer you wish to run the server from. Ensure this is on the network, and file sharing is enabled.
+- Then, on your Qlab computer, navigate to the folder over the network and open 'Get-IDs.applescript' in script editor.
+  - Ensure your Qlab file is open, the front-most Qlab file if there are multiple, and that the current cue list is the one you wish to monitor.
+  - Run the 'Get-IDs' script - this will create 'qlab-info-config.json' in the root folder.
+  - The first dialog box asks you to define the Qlab computer
+    - If you only have a single Qlab computer, select "Only" when prompted to define this Qlab machine.
+    - If you have a main and a backup Qlab computer, run this script first on the "Main", then repeat this process on the "Backup", and the script will append the necessary information on the end of the config file.
+  - The second dialog box allows you to choose the cue list you wish to monitor.
+  - The third dialog box asks you which local IP address you wish to use. If your computer is on multiple networks, e.g. a control network and a [Dante](https://www.audinate.com/meet-dante/what-is-dante) network, this allows you to select the correct one.
+  - Settings for Backup computers are not used in the current release, but will be implemented in an imminent release.
 - Open **Open Stage Control**.
 - Set the following settings in the launcher, using files from the `open-stage-control-module` folder:
   - **load**: select the file `open-stage-control-template.json`
@@ -39,9 +31,10 @@ You can run the module with either a UDP or TCP connection to Qlab. If using TCP
   - **no-gui**: if you do not want this open on the device which is the server, set this to true.
   - **IF USING UDP**
     - **osc-port**: set 53001. This is the port it will listen for replies from.
+    - Ensure you also edit the variable useTCP to "false" in `get-cue-list-playhead.js`
   - **IF USING TCP**
     - **tcp-port**: set 53001. 
-    - **tcp-targets**: set \[Qlab IP\]:53000 (e.g. `127.0.0.1:53000`). Use a space to separate multiple instances
+    - **tcp-targets**: set \[Qlab IP\]:53000 (e.g. `127.0.0.1:53000`). Use a space to separate multiple instances.
 - Now, click start to launch the OSC & web server.
 
 My suggested setup is to run the Open Stage Control server at Front Of House (for example, on the System computer), with the local GUI active, so the Sound No. 1 can see that it is working correctly. Then, the remote display for the MD is simply a browser window.
@@ -125,16 +118,29 @@ If you are using the included template, `open-stage-control-template.json`, try 
 
 To use this method, the cue list you wish to monitor must have a cue number. e.g., for "Click Tracks", you might number the cue list "CLICK".
 
-## Screenshots
+# Screenshots
+
+## Open Stage Control Custom Module
+
+### Launching Open Stage Control Module (using TCP)
+![Launching Open Stage Control Module (TCP)](_images/A_Open_Stage_Control_Module_Launcher.png)
+
+### Open Stage Control Module
+![Open Stage Control Module](_images/B_Open_Stage_Control_Module.png)
+
+### Module disconnected from Qlab
+![Open Stage Control Module](_images/C_Open_Stage_Control_Disconnected.png)
+
+## Node.js Version
 
 ### Launching the script from the macOS terminal
-![Launching the script from macOS terminal](https://github.com/bsmith96/qlab-display/blob/88a575394aa7cfd73a8b2e9f0469c437339c826e/_images/1%20Launch%20from%20terminal.png)
+![Launching the script from macOS terminal](_images/D_Node_Launch_From_Terminal.png)
 
 ### Setting custom options when launching the script from the macOS terminal
-![Launching the script with custom options](https://github.com/bsmith96/qlab-display/blob/88a575394aa7cfd73a8b2e9f0469c437339c826e/_images/2%20Set%20options%20from%20terminal.png)
+![Launching the script with custom options](_images/E_Node_Set_Options_From_Terminal.png)
 
 ### The Qlab Display working in Open Stage Control
-![Qlab Display in Open Stage Control](https://github.com/bsmith96/qlab-display/blob/d455d86049b6652e5e1927ed41af07260de47376/_images/3%20Open%20Stage%20Control%20display.png)
+![Qlab Display in Open Stage Control](_images/F_Node_Open_Stage_Control_Display.png)
 
 ### Qlab Display when Qlab has disconnected
-![Qlab Display when disconnected](https://github.com/bsmith96/qlab-display/blob/d455d86049b6652e5e1927ed41af07260de47376/_images/4%20Disconnected%20display.png)
+![Qlab Display when disconnected](_images/G_Node_Open_Stage_Control_Disconnected.png)
