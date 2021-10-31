@@ -30,21 +30,14 @@ var config = loadJSON("qlab-info-config.json");
 var nameAddress = config.control.address.name;
 var numAddress = config.control.address.number;
 
-if (config.QlabCount = 1) {
+if (config.QlabCount == 1) {
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
   var cueListID = config.QlabMain.cueListID;
-} else if (config.QlabCount = 2) {
+} else if (config.QlabCount == 2) {
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
   var cueListID = config.QlabMain.cueListID;
-  var qlabIP_B = config.QlabBackup.ip;
-  var workspaceID_B = config.QlabBackup.workspaceID;
-  var cueListID_B = config.QlabBackup.cueListID;
-};
-
-// backup, if required
-if (config.QlabCount == 2) {
   var qlabIP_B = config.QlabBackup.ip;
   var workspaceID_B = config.QlabBackup.workspaceID;
   var cueListID_B = config.QlabBackup.cueListID;
