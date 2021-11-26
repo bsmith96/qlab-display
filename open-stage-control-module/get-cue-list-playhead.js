@@ -2,12 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 3.0.0
+ * @version 3.0.1
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v3.0.0  - implements a system to display both Main and Backup Qlab playhead positions
- *           - manual switchover, which can be controlled from one client and all will switch
+ *   v3.0.1  - visual confirmation that a new (often identical) value has been received when using changeover
  */
 
 
@@ -221,11 +220,16 @@ module.exports = {
     if (address === '/module/changeover') {
       whichQlab = args[0].value
 
-      if (whichQlab === 'MAIN') {
+      // go blank for 0.1 seconds -- this allows you to visually see that a new (usually identical) value has been successfully retrieved
+      receive(qlabIP, 53001, numAddress, "");
+      receive(qlabIP, 53001, nameAddress, "");
+
+      // retrieve current playhead position
+      setTimeout(() => {if (whichQlab === 'MAIN') {
         send(qlabIP, 53000, '/workspace/' + workspaceID + '/cue_id/' + cueListID + '/playheadId');
       } else if (whichQlab === 'BACKUP') {
         send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/cue_id/' + cueListID_B + '/playheadId');
-      }
+      }}, 75);
       return
     }
 
