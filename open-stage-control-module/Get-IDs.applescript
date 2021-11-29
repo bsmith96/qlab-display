@@ -1,7 +1,7 @@
 -- @description Get Unique IDs for Open Stage Control monitoring
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 2.1
+-- @version 3.0-beta1
 -- @testedmacos 10.14.6
 -- @testedqlab 4.6.10
 -- @about 
@@ -12,8 +12,7 @@
 -- @separateprocess TRUE
 
 -- @changelog
---   v2.1  + prompts user to select cue list
---         + alerts the user if they try to configure the backup qlab mac first
+--   v3.0-beta1  + adds "control.useTCP" to config document
 
 
 ---- RUN SCRIPT ---------------------------
@@ -30,6 +29,9 @@ set thisCueList to chooseOption(theCueLists, "cue list")
 -- get IP address of this computer
 set listIPs to getIP()
 set thisIP to chooseOption(listIPs, "IP address")
+
+-- get TCP or UDP from the user
+set useProtocol to button returned of (display dialog "Would you like to use TCP or UDP to connect to Qlab? TCP is recommended" with title "Please select protocol" buttons {"TCP", "UDP", "Cancel"} default button "TCP" cancel button "Cancel")
 
 -- get QLab and Cue List info
 tell application id "com.figure53.Qlab.4" to tell front workspace
@@ -67,7 +69,7 @@ else if thisMac is "Only" then
 end if
 
 -- write to config file
-writeToConfig(jsonString)
+writeToConfig(jsonString, useProtocol)
 
 
 -- FUNCTIONS ------------------------------
@@ -111,7 +113,7 @@ on chooseOption(theList, theName)
 	return theOption
 end chooseOption
 
-on checkConfig()
+on checkConfig(useProtocol)
 	set configFile to ((getRootFolder() as text) & "qlab-info-config.json")
 	set configContents to readFile(configFile)
 	if configContents is "error" then
@@ -121,7 +123,16 @@ on checkConfig()
 		\"address\": {
 			\"name\": \"/next/name\",
 			\"number\": \"/next/number\"
-		}
+		},
+		\"useTCP\": "
+		
+		if useProtocol is "TCP" then
+			set configPreface to configPreface & "true"
+		else if useProtocol is "UDP" then
+			set configPreface to configPreface & "false"
+		end if
+		
+		set configPreface to configPreface & "
 	},
 "
 		
@@ -139,8 +150,8 @@ on checkMain(thisMac)
 	end if
 end checkMain
 
-on writeToConfig(theText)
-	set configFile to checkConfig()
+on writeToConfig(theText, useProtocol)
+	set configFile to checkConfig(useProtocol)
 	
 	writeToFile(theText, configFile, true)
 end writeToConfig

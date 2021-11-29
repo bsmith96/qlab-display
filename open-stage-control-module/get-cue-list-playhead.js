@@ -2,22 +2,12 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 3.0.1
+ * @version 3.1.0-beta1
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v3.0.1  - visual confirmation that a new (often identical) value has been received when using changeover
+ *   v3.1.0-beta1  - moves "useTCP" definition from this file to config document
  */
-
-
-/*******************************************
- ***********  USER CUSTOMISATION  **********
- *******************************************/
-
-// Use TCP or UDP?
-// If false, sends thump (heartbeat) to Qlab every 20 seconds to maintain UDP connection.
-// If true, disables the thump (heartbeat) command.
-const useTCP = true;
 
 
 /*******************************************
@@ -28,6 +18,9 @@ var config = loadJSON("qlab-info-config.json");
 
 var nameAddress = config.control.address.name;
 var numAddress = config.control.address.number;
+var useTCP = config.control.useTCP;
+
+console.log(useTCP);
 
 if (config.QlabCount == 1) {
   var qlabIP = config.QlabMain.ip;
