@@ -2,10 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 3.1.0-beta1
+ * @version 3.1.0-beta3
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
+ *   v3.1.0-beta3  - display is now blank if there is no playhead on the current cue list
  *   v3.1.0-beta1  - moves "useTCP" definition from this file to config document
  */
 
@@ -118,6 +119,11 @@ function interpretIncoming(data, qlab) {
   // when receiving an update with the playhead's cue id, ask for name and number
   // does not pass this message on to the server
   if (address === '/update/workspace/' + theWorkspace + '/cueList/' + theCueList + '/playbackPosition') { // updates
+    if (args == "") {
+      receive(nameAddress, "")
+      receive(numAddress, "")
+      return
+    }
     send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
     send(host, 53000, '/cue_id/' + args[0].value + '/number');
     return
