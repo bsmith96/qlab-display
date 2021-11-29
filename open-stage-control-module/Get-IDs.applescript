@@ -1,7 +1,7 @@
 -- @description Get Unique IDs for Open Stage Control monitoring
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 3.0-beta1
+-- @version 3.0-beta2
 -- @testedmacos 10.14.6
 -- @testedqlab 4.6.10
 -- @about 
@@ -12,13 +12,15 @@
 -- @separateprocess TRUE
 
 -- @changelog
+--  v3.0-beta2  + removes "Only" option for Qlab
+--              + removes the need to manually delete old configs to generate a new one
 --   v3.0-beta1  + adds "control.useTCP" to config document
 
 
 ---- RUN SCRIPT ---------------------------
 
 -- determine if this computer is MAIN or BACKUP
-set thisMac to (choose from list {"Main", "Backup", "Only"} with title "Which QLab mac is this?") as string
+set thisMac to (choose from list {"Main", "Backup"} with title "Which QLab mac is this?") as string
 
 checkMain(thisMac)
 
@@ -31,7 +33,11 @@ set listIPs to getIP()
 set thisIP to chooseOption(listIPs, "IP address")
 
 -- get TCP or UDP from the user
-set useProtocol to button returned of (display dialog "Would you like to use TCP or UDP to connect to Qlab? TCP is recommended" with title "Please select protocol" buttons {"TCP", "UDP", "Cancel"} default button "TCP" cancel button "Cancel")
+if thisMac is "Main" then
+	set useProtocol to button returned of (display dialog "Would you like to use TCP or UDP to connect to Qlab? TCP is recommended" with title "Please select protocol" buttons {"TCP", "UDP", "Cancel"} default button "TCP" cancel button "Cancel")
+else
+	set useProtocol to "not needed"
+end if
 
 -- get QLab and Cue List info
 tell application id "com.figure53.Qlab.4" to tell front workspace
@@ -44,32 +50,25 @@ end tell
 
 -- format for JSON
 if thisMac is "Main" then
-	set jsonString to "	\"QlabCount\": 2,
-	\"QlabMain\": {
+	set jsonString to "	\"QlabMain\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
 		\"cueListID\": \"" & thisCueListID & "\"
 	},
-"
-else if thisMac is "Backup" then
-	set jsonString to "  \"QlabBackup\": {
-		\"ip\": \"" & thisIP & "\",
-		\"workspaceID\": \"" & thisWorkspaceID & "\",
-		\"cueListID\": \"" & thisCueListID & "\"
-	}
+	\"QlabCount\": 1
 }"
-else if thisMac is "Only" then
-	set jsonString to "	\"QlabCount\": 1,
-	\"QlabMain\": {
+else if thisMac is "Backup" then
+	set jsonString to "\"QlabBackup\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
 		\"cueListID\": \"" & thisCueListID & "\"
-	}
+	},
+	\"QlabCount\": 2
 }"
 end if
 
 -- write to config file
-writeToConfig(jsonString, useProtocol)
+writeToConfig(jsonString, thisMac, useProtocol)
 
 
 -- FUNCTIONS ------------------------------
@@ -113,10 +112,9 @@ on chooseOption(theList, theName)
 	return theOption
 end chooseOption
 
-on checkConfig(useProtocol)
+on checkConfig(thisMac, useProtocol)
 	set configFile to ((getRootFolder() as text) & "qlab-info-config.json")
-	set configContents to readFile(configFile)
-	if configContents is "error" then
+	if thisMac is "Main" then
 		set configPreface to ¬
 			"{
 	\"control\": {
@@ -145,15 +143,23 @@ on checkMain(thisMac)
 	set configFile to ((getRootFolder() as text) & "qlab-info-config.json")
 	set configContents to readFile(configFile)
 	if configContents is "error" and thisMac is "Backup" then
-		display dialog "Please run this script on the Main Qlab first"
+		display dialog "Please run this script on the Main Qlab first" with title "Alert" with icon stop
+		error -128
+	else if item -2 of configContents is "	\"QlabCount\": 2" and thisMac is "Backup" then
+		display dialog "Please run this script on the Main Qlab first, to generate an updated config file" with title "Alert" with icon stop
 		error -128
 	end if
+	log item -2 of configContents
 end checkMain
 
-on writeToConfig(theText, useProtocol)
-	set configFile to checkConfig(useProtocol)
+on writeToConfig(theText, thisMac, useProtocol)
+	set configFile to checkConfig(thisMac, useProtocol)
 	
-	writeToFile(theText, configFile, true)
+	if thisMac is "Main" then
+		writeToFile(theText, configFile, true)
+	else if thisMac is "Backup" then
+		writeToFile(theText, configFile, "backup")
+	end if
 end writeToConfig
 
 on writeToFile(thisData, targetFile, appendData) -- (string, file path as string, boolean)
@@ -163,6 +169,8 @@ on writeToFile(thisData, targetFile, appendData) -- (string, file path as string
 			open for access file targetFile with write permission
 		if appendData is false then ¬
 			set eof of the openTargetFile to 0
+		if appendData is "backup" then ¬
+			set eof of the openTargetFile to ((get eof of the openTargetFile) - 16)
 		write thisData to the openTargetFile starting at eof
 		close access the openTargetFile
 		return true
