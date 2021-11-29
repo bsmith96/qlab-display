@@ -20,8 +20,6 @@ var nameAddress = config.control.address.name;
 var numAddress = config.control.address.number;
 var useTCP = config.control.useTCP;
 
-console.log(useTCP);
-
 if (config.QlabCount == 1) {
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
