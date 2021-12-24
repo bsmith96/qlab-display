@@ -13,33 +13,40 @@ You can run the module with either a UDP or TCP connection to Qlab. I recommend 
 
 ## Open Stage Control setup
 
-- First, put the 'open-stage-control-module' folder on the computer you wish to run the server from. Ensure this is on the network, and file sharing is enabled.
-- Then, on your Qlab computer, navigate to the folder over the network and open 'Get-IDs.applescript' in script editor.
-  - Ensure your Qlab file is open, the front-most Qlab file if there are multiple, and that the current cue list is the one you wish to monitor.
+- First, put the 'open-stage-control-module' folder on the computer you wish to run the server from. Ensure the computer is on the network, and file sharing is enabled.
+- On your Qlab computer, navigate to the folder over the network and open 'Get-IDs.applescript' in script editor.
+  - Ensure your Qlab file is open, and the front-most Qlab workspace.
   - Run the 'Get-IDs' script - this will create 'qlab-info-config.json' in the root folder.
   - The first dialog box asks you to define the Qlab computer
-    - If you only have a single Qlab computer, select "Only" when prompted to define this Qlab machine.
-    - If you have a main and a backup Qlab computer, run this script first on the "Main", then repeat this process on the "Backup", and the script will append the necessary information on the end of the config file.
+    - If this is your only Qlab computer, or if this is your "Main" or "A" machine, select "Main".
+    - If you have a *main* and *backup* Qlab computer, ensure you run this setup process on the *main* first, then repeat the process on the *backup*, selecting "Backup", to complete the config file.
   - The second dialog box allows you to choose the cue list you wish to monitor.
   - The third dialog box asks you which local IP address you wish to use. If your computer is on multiple networks, e.g. a control network and a [Dante](https://www.audinate.com/meet-dante/what-is-dante) network, this allows you to select the correct one.
-  - Settings for Backup computers are not used in the current release, but will be implemented in an imminent release.
-- Open **Open Stage Control**.
-- Set the following settings in the launcher, using files from the `open-stage-control-module` folder:
-  - **load**: select the file `open-stage-control-template.json`
-  - **custom-module**: select the file `get-cue-list-playhead.js`
-  - **port**: this is the port that the web server is served to. Leave this blank to use the default 8080.
-  - **no-gui**: if you do not want this open on the device which is the server, set this to true.
-  - **IF USING UDP**
-    - **osc-port**: set 53001. This is the port it will listen for replies from.
-    - Ensure you also edit the variable useTCP to "false" in `get-cue-list-playhead.js`
-  - **IF USING TCP**
-    - **tcp-port**: set 53001. 
-    - **tcp-targets**: set \[Qlab IP\]:53000 (e.g. `127.0.0.1:53000`). Use a space to separate multiple instances.
-- Now, click start to launch the OSC & web server.
+    - **NB**: 127.0.0.1 is the localhost address.
+- If you are running the server on a mac:
+  - On the computer running the server, open 'Create-Server-Setup.applescript' in script editor, and run the script. This will create 'qlab-display.config'.
+  - Open **Open Stage Control**.
+  - Select *Load* and open 'qlab-display.config'.
+  - Click start to launch the OSC & web server.
+- If you are running the server on a non-mac computer:
+  - Set the following settings in the launcher, using files from the `open-stage-control-module` folder:
+    - **load**: select the file `open-stage-control-template.json`
+    - **custom-module**: select the file `get-cue-list-playhead.js`
+    - **port**: this is the port that the web server is served to. Leave this blank to use the default 8080.
+    - **no-gui**: if you do not want this open on the device which is the server, set this to true.
+    - **IF USING UDP**
+      - **osc-port**: set 53001. This is the port it will listen for replies from.
+      - Ensure you also edit the variable useTCP to "false" in `get-cue-list-playhead.js`
+    - **IF USING TCP**
+      - **tcp-port**: set 53001. 
+      - **tcp-targets**: set \[Qlab IP\]:53000 (e.g. `127.0.0.1:53000`). Use a space to separate multiple instances.
+  - Now, click start to launch the OSC & web server.
 
 My suggested setup is to run the Open Stage Control server at Front Of House (for example, on the System computer), with the local GUI active, so the Sound No. 1 can see that it is working correctly. Then, the remote display for the MD is simply a browser window.
 
 This has the added advantage that, if the Sound No 1 has to switch to the Backup due to issues with the Main, or the Main computer crashing entirely, they can also hit the "BACKUP" button on the viewer, which also switches it for the MD.
+
+If you ever need to re-generate 'qlab-info-config.json', you can simply run the process again. This might happen if you bundle the workspace.
 
 # Node JS version
 

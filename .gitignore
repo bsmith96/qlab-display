@@ -105,3 +105,4 @@ dist
 
 # config file
 /open-stage-control-module/qlab-info-config.json
+/open-stage-control-module/qlab-display.config

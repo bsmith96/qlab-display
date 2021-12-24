@@ -2,22 +2,12 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 3.0.1
+ * @version 3.1.0
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v3.0.1  - visual confirmation that a new (often identical) value has been received when using changeover
+ *   v3.1.0  + Improvements on usability and setup
  */
-
-
-/*******************************************
- ***********  USER CUSTOMISATION  **********
- *******************************************/
-
-// Use TCP or UDP?
-// If false, sends thump (heartbeat) to Qlab every 20 seconds to maintain UDP connection.
-// If true, disables the thump (heartbeat) command.
-const useTCP = true;
 
 
 /*******************************************
@@ -28,6 +18,7 @@ var config = loadJSON("qlab-info-config.json");
 
 var nameAddress = config.control.address.name;
 var numAddress = config.control.address.number;
+var useTCP = config.control.useTCP;
 
 if (config.QlabCount == 1) {
   var qlabIP = config.QlabMain.ip;
@@ -127,6 +118,11 @@ function interpretIncoming(data, qlab) {
   // when receiving an update with the playhead's cue id, ask for name and number
   // does not pass this message on to the server
   if (address === '/update/workspace/' + theWorkspace + '/cueList/' + theCueList + '/playbackPosition') { // updates
+    if (args == "") {
+      receive(nameAddress, "")
+      receive(numAddress, "")
+      return
+    }
     send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
     send(host, 53000, '/cue_id/' + args[0].value + '/number');
     return
