@@ -12,9 +12,7 @@
 -- @separateprocess TRUE
 
 -- @changelog
---  v3.0-beta2  + removes "Only" option for Qlab
---              + removes the need to manually delete old configs to generate a new one
---   v3.0-beta1  + adds "control.useTCP" to config document
+--   v3.0 + improvements in usability
 
 
 ---- RUN SCRIPT ---------------------------
@@ -100,7 +98,8 @@ end getCueLists
 on getIP()
 	try
 		set theReturned to (do shell script "ifconfig | grep inet | grep -v inet6 | cut -d\" \" -f2")
-		set theIPs to splitString(theReturned, "")
+		set theIPs to splitString(theReturned, "
+")
 	on error
 		set theIPs to {"Can't get Local IP"}
 	end try
