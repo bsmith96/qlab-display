@@ -1,0 +1,20 @@
+{
+	"control": {
+		"address": {
+			"name": "/next/name",
+			"number": "/next/number"
+		},
+		"useTCP": false
+	},
+	"QlabMain": {
+		"ip": "192.168.68.145",
+		"workspaceID": "8380346C-0EBF-4984-9C3B-09BE0B840F36",
+		"cueListID": "597488A8-7445-4926-AA0D-3D53E3CD704E"
+	},
+	"QlabBackup": {
+		"ip": "192.168.68.145",
+		"workspaceID": "8380346C-0EBF-4984-9C3B-09BE0B840F36",
+		"cueListID": "597488A8-7445-4926-AA0D-3D53E3CD704E"
+	},
+	"QlabCount": 2
+}
