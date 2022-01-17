@@ -5,6 +5,8 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F120U9I)
 
+> **NB**: If you are looking for the standalone Node.js version, check release v3.1.0 and earlier.
+
 # Custom Module for Open Stage Control
 
 This version runs entirely within the [Open Stage Control](http://openstagecontrol.ammd.net/) software, as a 'custom module'. It requests updates from Qlab when there are changes to the workspace, and interprets the responses appropriately - the module ignores responses which do not relate to the playhead position of the chosen cue list.
@@ -58,4 +60,3 @@ If you ever need to re-generate 'qlab-info-config.json', you can simply run the 
 
 ## Module disconnected from Qlab
 ![Open Stage Control Module](_images/C_Open_Stage_Control_Disconnected.png)
-
