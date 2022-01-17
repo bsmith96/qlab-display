@@ -44,7 +44,7 @@ You can run the module with either a UDP or TCP connection to Qlab. I recommend 
 
 My suggested setup is to run the Open Stage Control server at Front Of House (for example, on the System computer), with the local GUI active, so the Sound No. 1 can see that it is working correctly. Then, the remote display for the MD is simply a browser window.
 
-This has the added advantage that, if the Sound No 1 has to switch to the Backup Qlab computer due to issues with the Main, or the Main computer crashing entirely, they can also hit the "BACKUP" button on the viewer, which also switches it for the MD.
+This has the added advantage that, if the Sound No 1 has to switch to the Backup Qlab computer due to issues with the Main, or the Main computer crashing entirely, they can hit the "BACKUP" button on the viewer, which also switches it for the MD.
 
 If you ever need to re-generate 'qlab-info-config.json', you can simply run the process again. This might happen if you bundle the workspace.
 
