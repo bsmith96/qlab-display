@@ -7,6 +7,7 @@
  * 
  * @changelog
  *   v4.0.0  + Change filenames
+ *           + Improve usability of the overall repository
  */
 
 
