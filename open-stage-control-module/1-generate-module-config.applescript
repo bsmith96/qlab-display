@@ -1,7 +1,7 @@
 -- @description Get Unique IDs for Open Stage Control monitoring
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 3.0-beta2
+-- @version 3.0
 -- @testedmacos 10.14.6
 -- @testedqlab 4.6.10
 -- @about 
@@ -98,8 +98,7 @@ end getCueLists
 on getIP()
 	try
 		set theReturned to (do shell script "ifconfig | grep inet | grep -v inet6 | cut -d\" \" -f2")
-		set theIPs to splitString(theReturned, "
-")
+		set theIPs to splitString(theReturned, "")
 	on error
 		set theIPs to {"Can't get Local IP"}
 	end try

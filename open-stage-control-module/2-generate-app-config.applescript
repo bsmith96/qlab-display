@@ -1,13 +1,13 @@
 -- @description Create Open Stage Control server setup
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 1.0-beta1
+-- @version 2.0
 -- @testedmacos 10.14.6
 -- @testedqlab 4.6.10
 -- @about Creates a file to open/load in Open Stage Control, with settings required to start the server.
 
 -- @changelog
---   v1.0  + init
+--   v1.0  + change filenames
 
 
 ---- DECLARATIONS -------------------------
@@ -48,7 +48,7 @@ set rootFolder to getRootFolder()
 set rootFolder to rootFolder as text
 set rootFolder to POSIX path of alias rootFolder
 
-set configContents to configContents & "\"load\":\"" & rootFolder & "open-stage-control-template.json\",\"custom-module\":\"" & rootFolder & "get-cue-list-playhead.js\""
+set configContents to configContents & "\"load\":\"" & rootFolder & "qlab-display_layout.json\",\"custom-module\":\"" & rootFolder & "qlab-display_module.js\""
 
 if useTCP of control of qlabConfig is false then
 	set configContents to configContents & ",\"osc-port\":53001"
