@@ -53,10 +53,10 @@ If you ever need to re-generate 'qlab-info-config.json', you can simply run the 
 # Screenshots
 
 ## Launching Open Stage Control Module (using TCP)
-![Launching Open Stage Control Module (TCP)](_images/A_Open_Stage_Control_Module_Launcher.png)
+![Launching Open Stage Control Module (TCP)](.images/A_Open_Stage_Control_Module_Launcher.png)
 
 ## Open Stage Control Module
-![Open Stage Control Module](_images/B_Open_Stage_Control_Module.png)
+![Open Stage Control Module](.images/B_Open_Stage_Control_Module.png)
 
 ## Module disconnected from Qlab
-![Open Stage Control Module](_images/C_Open_Stage_Control_Disconnected.png)
+![Open Stage Control Module](.images/C_Open_Stage_Control_Disconnected.png)
