@@ -44,6 +44,9 @@
  } else if (config.QlabCount == 2) {
    var whichQlab = 'MAIN'
  }
+
+ var playheadID = "";
+ var cueList = {};
  
  
  /*******************************************
@@ -111,6 +114,32 @@
    send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/children');
  
  }
+
+ // Reload cue list
+ function onReloadCueList(returnedValue) {
+  cueList = returnedValue;
+  onRefreshCueList()
+ };
+
+ // Refresh playhead on cue list
+ function onRefreshCueList() {
+  var htmlTag1 = "<li>";
+  var htmlTag2 = "</li>";
+  var htmlHighlight1 = "<li class=\"active\">";
+  var htmlHighlight2 = "</li>";
+  var htmlTagMaster = "<ul>";
+  var htmlTagEnding = "</ul>";
+  var cueListNames = [];
+  for (let i in cueList) {
+    if (cueList[i].uniqueID === playheadID) {
+      cueListNames.push(htmlHighlight1.concat(cueList[i].name, htmlHighlight2));
+    } else {
+     cueListNames.push(htmlTag1.concat(cueList[i].name, htmlTag2));
+    }
+  }
+  receive("/EDIT", "html_1", {"html": htmlTagMaster.concat(cueListNames.join('\r\n'), htmlTagEnding)})
+  // EDIT is quite CPU expensive apparently, "use OSC listeners". Something to aim to edit?
+ };
  
  // Interpret incoming messages
  function interpretIncoming(data, qlab) {
@@ -122,17 +151,20 @@
    // does not pass this message on to the server
    if (address === '/update/workspace/' + theWorkspace + '/cueList/' + theCueList + '/playbackPosition') { // updates
      if (args == "") {
-       receive(nameAddress, "")
-       receive(numAddress, "")
+       receive(nameAddress, "");
+       receive(numAddress, "");
        return
      }
      send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
      send(host, 53000, '/cue_id/' + args[0].value + '/number');
+     playheadID = args[0].value;
+     onRefreshCueList();
      return
    } else if (address.endsWith('/playheadId')) { // replies to direct requests (startup, refresh, and changeover)
      var returnedValue = decodeQlabReply(args);
      send(host, 53000, '/cue_id/' + returnedValue + '/displayName');
      send(host, 53000, '/cue_id/' + returnedValue + '/number');
+     playheadID = returnedValue;
      return
    }
    
@@ -144,17 +176,7 @@
      } else if (address.endsWith('/number')) {
        receive(host, 53001, numAddress, returnedValue) // send the number to the server
      } else if (address.endsWith('children')) {
-       var returnedValue = decodeQlabReply(args);
-       console.log(returnedValue[0]);
-       var htmlTag1 = "<li>";
-       var htmlTag2 = "</li>";
-       var htmlTagMaster = "<ul>";
-       var cueList = [];
-       for (let i in returnedValue) {
-         cueList.push(htmlTag1.concat(returnedValue[i].name, htmlTag2))
-       }
-       receive("/EDIT", "html_1", {"html": htmlTagMaster.concat(cueList.join('\r\n'), "</ul>")})
-       // EDIT is quite CPU expensive apparently, "use OSC listeners". Something to aim to edit?
+       onReloadCueList(returnedValue);
      }
      return
    }
