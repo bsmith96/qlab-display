@@ -33,8 +33,10 @@ set thisIP to chooseOption(listIPs, "IP address")
 -- get TCP or UDP from the user
 if thisMac is "Main" then
 	set useProtocol to button returned of (display dialog "Would you like to use TCP or UDP to connect to Qlab? TCP is recommended" with title "Please select protocol" buttons {"TCP", "UDP", "Cancel"} default button "TCP" cancel button "Cancel")
+	set displayTransport to button returned of (display dialog "Would you like to display transport controls?" with title "Transport controls" buttons {"Yes", "No", "Cancel"} default button "No" cancel button "Cancel")
 else
 	set useProtocol to "not needed"
+	set displayTransport to "not needed"
 end if
 
 -- get QLab and Cue List info
@@ -66,7 +68,7 @@ else if thisMac is "Backup" then
 end if
 
 -- write to config file
-writeToConfig(jsonString, thisMac, useProtocol)
+writeToConfig(jsonString, thisMac, useProtocol, displayTransport)
 
 
 -- FUNCTIONS ------------------------------
@@ -110,7 +112,7 @@ on chooseOption(theList, theName)
 	return theOption
 end chooseOption
 
-on checkConfig(thisMac, useProtocol)
+on checkConfig(thisMac, useProtocol, displayTransport)
 	set configFile to ((getRootFolder() as text) & "qlab-info-config.json")
 	if thisMac is "Main" then
 		set configPreface to ¬
@@ -125,6 +127,15 @@ on checkConfig(thisMac, useProtocol)
 		if useProtocol is "TCP" then
 			set configPreface to configPreface & "true"
 		else if useProtocol is "UDP" then
+			set configPreface to configPreface & "false"
+		end if
+		
+		set configPreface to configPreface & ",
+		\"displayTransport\": "
+		
+		if displayTransport is "Yes" then
+			set configPreface to configPreface & "true"
+		else if displayTransport is "No" then
 			set configPreface to configPreface & "false"
 		end if
 		
@@ -150,8 +161,8 @@ on checkMain(thisMac)
 	log item -2 of configContents
 end checkMain
 
-on writeToConfig(theText, thisMac, useProtocol)
-	set configFile to checkConfig(thisMac, useProtocol)
+on writeToConfig(theText, thisMac, useProtocol, displayTransport)
+	set configFile to checkConfig(thisMac, useProtocol, displayTransport)
 	
 	if thisMac is "Main" then
 		writeToFile(theText, configFile, true)
