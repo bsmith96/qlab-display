@@ -20,6 +20,7 @@ var config = loadJSON("qlab-info-config.json");
 var nameAddress = config.control.address.name;
 var numAddress = config.control.address.number;
 var useTCP = config.control.useTCP;
+var displayTransport = config.control.displayTransport;
 
 if (config.QlabCount == 1) {
   var qlabIP = config.QlabMain.ip;
@@ -97,6 +98,23 @@ function activateBackup() {
   receive('/SESSION/SAVE');
 }
 
+// Show transport controls if required
+function showTransport() {
+  receive('/EDIT', '<<', {'visible':true});
+  receive('/EDIT', '>>', {'visible':true});
+  receive('/EDIT', 'GO', {'visible':true});
+  receive('/EDIT', 'PANIC', {'visible':true});
+  receive('/SESSION/SAVE');
+}
+
+function hideTransport() {
+  receive('/EDIT', '<<', {'visible':false});
+  receive('/EDIT', '>>', {'visible':false});
+  receive('/EDIT', 'GO', {'visible':false});
+  receive('/EDIT', 'PANIC', {'visible':false});
+  receive('/SESSION/SAVE');
+}
+
 // Refresh qlab
 function onRefresh(qlab) {
 
@@ -108,6 +126,18 @@ function onRefresh(qlab) {
   // ask for current position
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
 
+}
+
+// Transport to both QLab computers simultaneously
+function sendTransport(theAddress, qlab_A, qlab_B) {
+
+  var [theWorkspace_A, theCueList_A, theIP_A] = qlab_A;
+  var [theWorkspace_B, theCueList_B, theIP_B] = qlab_B;
+
+  // ##FIXME##: can't by default move the playhead of a particular cue list
+
+  send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueList_A + theAddress);
+  send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress);
 }
 
 // Interpret incoming messages
@@ -173,6 +203,14 @@ module.exports = {
         onInit(qlabBackup);
         activateBackup();
       }
+
+      setTimeout(function(){
+        if (displayTransport === true) {
+          showTransport();
+        } else if (displayTransport === false) {
+          hideTransport();
+        }
+      }, 100)
     }, 2000)
 
   },
@@ -228,6 +266,30 @@ module.exports = {
         send(qlabIP_B, 53000, '/workspace/' + workspaceID_B + '/cue_id/' + cueListID_B + '/playheadId');
       }}, 75);
       return
+    }
+
+    
+    // Transport controls
+    if (whichQlab == "ONLY") {
+      if (address == '/transport/next') {
+        sendTransport('/playhead/next', qlabOnly, qlabBackup)
+      } else if (address == '/transport/previous') {
+        sendTransport('/playhead/previous', qlabOnly, qlabBackup)
+      } else if (address === '/transport/go') {
+        sendTransport('/go', qlabOnly, qlabBackup)
+      } else if (address === '/transport/panic', qlabOnly, qlabBackup) {
+        sendTransport('/panic', qlabOnly, qlabBackup)
+      }
+    } else if (whichQlab == 'MAIN' || whichQlab === 'BACKUP') {
+      if (address === '/transport/next') {
+        sendTransport('/playhead/next', qlabMain, qlabBackup)
+      } else if (address === '/transport/previous') {
+        sendTransport('/playhead/previous', qlabMain, qlabBackup) 
+      } else if (address === '/transport/go') {
+        sendTransport('/go', qlabMain, qlabBackup)
+      } else if (address === '/transport/panic') {
+        sendTransport('/panic', qlabMain, qlabBackup)
+      }
     }
 
     return {address, args, host, port}
