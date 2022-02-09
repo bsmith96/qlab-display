@@ -2,12 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.0.0
+ * @version 4.1.0-beta1
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v4.0.0  + Change filenames
- *           + Improve usability of the overall repository
+ *   v4.1.0-beta1  + add transport button functionality
  */
 
 
