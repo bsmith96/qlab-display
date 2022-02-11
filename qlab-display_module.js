@@ -2,11 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.1.0-beta1
+ * @version 4.1.0-beta5
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v4.1.0-beta1  + add transport button functionality
+ *   v4.1.0-beta5  + options for all buttons, and only next/previous
  */
 
 
@@ -99,8 +99,8 @@ function activateBackup() {
 
 // Show transport controls if required
 function showTransport() {
-  receive('/EDIT', '<<', {'visible':true});
-  receive('/EDIT', '>>', {'visible':true});
+  receive('/EDIT', '<<', {'visible':true, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nborder-radius: 10rem;'});
+  receive('/EDIT', '>>', {'visible':true, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nleft: 68%;\nborder-radius: 10rem;'});
   receive('/EDIT', 'GO', {'visible':true});
   receive('/EDIT', 'PANIC', {'visible':true});
   receive('/SESSION/SAVE');
@@ -109,6 +109,14 @@ function showTransport() {
 function hideTransport() {
   receive('/EDIT', '<<', {'visible':false});
   receive('/EDIT', '>>', {'visible':false});
+  receive('/EDIT', 'GO', {'visible':false});
+  receive('/EDIT', 'PANIC', {'visible':false});
+  receive('/SESSION/SAVE');
+}
+
+function showReducedTransport() {
+  receive('/EDIT', '<<', {'visible':true, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nborder-radius: 10rem;'});
+  receive('/EDIT', '>>', {'visible':true, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nleft: 50%;\nborder-radius: 10rem;'});
   receive('/EDIT', 'GO', {'visible':false});
   receive('/EDIT', 'PANIC', {'visible':false});
   receive('/SESSION/SAVE');
@@ -204,9 +212,11 @@ module.exports = {
       }
 
       setTimeout(function(){
-        if (displayTransport === true) {
+        if (displayTransport === "full") {
           showTransport();
-        } else if (displayTransport === false) {
+        } else if (displayTransport === "reduced"){
+          showReducedTransport();
+        } else if (displayTransport === "false") {
           hideTransport();
         }
       }, 100)
