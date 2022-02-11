@@ -1,7 +1,7 @@
 -- @description Get Unique IDs for Open Stage Control monitoring
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 3.1-beta1
+-- @version 3.1-beta5
 -- @testedmacos 10.14.6
 -- @testedqlab 4.6.10
 -- @about 
@@ -12,7 +12,7 @@
 -- @separateprocess TRUE
 
 -- @changelog
---   v3.1 + add displayTransport options
+--   v3.1-beta5 + add option for next/prev only
 
 
 ---- RUN SCRIPT ---------------------------
@@ -33,7 +33,7 @@ set thisIP to chooseOption(listIPs, "IP address")
 -- get TCP or UDP from the user
 if thisMac is "Main" then
 	set useProtocol to button returned of (display dialog "Would you like to use TCP or UDP to connect to Qlab? TCP is recommended" with title "Please select protocol" buttons {"TCP", "UDP", "Cancel"} default button "TCP" cancel button "Cancel")
-	set displayTransport to button returned of (display dialog "Would you like to display transport controls?" with title "Transport controls" buttons {"Yes", "No", "Cancel"} default button "No" cancel button "Cancel")
+	set displayTransport to button returned of (display dialog "Would you like to display transport controls?" with title "Transport controls" buttons {"Full", "Next/Prev", "No"} default button "No")
 else
 	set useProtocol to "not needed"
 	set displayTransport to "not needed"
@@ -133,10 +133,12 @@ on checkConfig(thisMac, useProtocol, displayTransport)
 		set configPreface to configPreface & ",
 		\"displayTransport\": "
 		
-		if displayTransport is "Yes" then
-			set configPreface to configPreface & "true"
+		if displayTransport is "Full" then
+			set configPreface to configPreface & "\"full\""
+		else if displayTransport is "Next/Prev" then
+			set configPreface to configPreface & "\"reduced\""
 		else if displayTransport is "No" then
-			set configPreface to configPreface & "false"
+			set configPreface to configPreface & "\"false\""
 		end if
 		
 		set configPreface to configPreface & "
