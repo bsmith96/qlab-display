@@ -99,26 +99,26 @@ function activateBackup() {
 
 // Show transport controls if required
 function showTransport() {
-  receive('/EDIT', '<<', {'visible':true, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nborder-radius: 10rem;'});
-  receive('/EDIT', '>>', {'visible':true, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nleft: 68%;\nborder-radius: 10rem;'});
-  receive('/EDIT', 'GO', {'visible':true});
-  receive('/EDIT', 'PANIC', {'visible':true});
+  receive('/EDIT', '<<', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nborder-radius: 10rem;'});
+  receive('/EDIT', '>>', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nleft: 68%;\nborder-radius: 10rem;'});
+  receive('/EDIT', 'GO', {'visible':true, 'interaction': true, 'bypass': false});
+  receive('/EDIT', 'PANIC', {'visible':true, 'interaction': true, 'bypass': false});
   receive('/SESSION/SAVE');
 }
 
 function hideTransport() {
-  receive('/EDIT', '<<', {'visible':false});
-  receive('/EDIT', '>>', {'visible':false});
-  receive('/EDIT', 'GO', {'visible':false});
-  receive('/EDIT', 'PANIC', {'visible':false});
+  receive('/EDIT', '<<', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', '>>', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', 'GO', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', 'PANIC', {'visible':false, 'interaction': false, 'bypass': true});
   receive('/SESSION/SAVE');
 }
 
 function showReducedTransport() {
-  receive('/EDIT', '<<', {'visible':true, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nborder-radius: 10rem;'});
-  receive('/EDIT', '>>', {'visible':true, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nleft: 50%;\nborder-radius: 10rem;'});
-  receive('/EDIT', 'GO', {'visible':false});
-  receive('/EDIT', 'PANIC', {'visible':false});
+  receive('/EDIT', '<<', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nborder-radius: 10rem;'});
+  receive('/EDIT', '>>', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nleft: 50%;\nborder-radius: 10rem;'});
+  receive('/EDIT', 'GO', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', 'PANIC', {'visible':false, 'interaction': false, 'bypass': true});
   receive('/SESSION/SAVE');
 }
 
