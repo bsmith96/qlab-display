@@ -80,6 +80,3 @@ This has the added advantage that, if the Sound Operator needs to switch to the 
 
 ### Transport - Reduced
 ![Transport - Reduced](.images/F_Module_Transport_Reduced.png)
-
-## Module disconnected from QLab
-![Open Stage Control Module](.images/G_Module_Disconnected.png)
