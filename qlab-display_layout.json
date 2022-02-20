@@ -1,6 +1,6 @@
 {
   "createdWith": "Open Stage Control",
-  "version": "1.14.5",
+  "version": "1.15.0",
   "type": "session",
   "content": {
     "type": "root",
@@ -69,7 +69,8 @@
         "decimals": 2,
         "target": "",
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "text",
@@ -103,7 +104,8 @@
         "target": "",
         "align": "left",
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "text",
@@ -137,7 +139,8 @@
         "target": "",
         "align": "center",
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
@@ -159,7 +162,7 @@
         "lineWidth": "auto",
         "padding": "auto",
         "html": "",
-        "css": "width: 130rem; left: calc(98% - 260rem);",
+        "css": "width: 260rem; left: calc(98% - 260rem);",
         "vertical": false,
         "wrap": false,
         "value": 1,
@@ -180,14 +183,15 @@
         "ignoreDefaults": false,
         "bypass": false,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
         "top": "auto",
         "left": "auto",
         "id": "BACKUP",
-        "visible": true,
+        "visible": false,
         "interaction": true,
         "comments": "",
         "width": "auto",
@@ -223,7 +227,8 @@
         "ignoreDefaults": false,
         "bypass": false,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
@@ -231,7 +236,7 @@
         "left": "2%",
         "id": "<<",
         "visible": false,
-        "interaction": true,
+        "interaction": false,
         "comments": "",
         "width": "auto",
         "height": "auto",
@@ -264,9 +269,10 @@
         "decimals": 2,
         "target": "127.0.0.1:2000",
         "ignoreDefaults": false,
-        "bypass": false,
+        "bypass": true,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
@@ -274,7 +280,7 @@
         "left": "auto",
         "id": ">>",
         "visible": false,
-        "interaction": true,
+        "interaction": false,
         "comments": "",
         "width": "auto",
         "height": "auto",
@@ -307,9 +313,10 @@
         "decimals": 2,
         "target": "127.0.0.1:2000",
         "ignoreDefaults": false,
-        "bypass": false,
+        "bypass": true,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
@@ -317,7 +324,7 @@
         "left": "auto",
         "id": "GO",
         "visible": false,
-        "interaction": true,
+        "interaction": false,
         "comments": "",
         "width": "auto",
         "height": "auto",
@@ -350,9 +357,10 @@
         "decimals": 2,
         "target": "127.0.0.1:2000",
         "ignoreDefaults": false,
-        "bypass": false,
+        "bypass": true,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
@@ -360,7 +368,7 @@
         "left": "auto",
         "id": "PANIC",
         "visible": false,
-        "interaction": true,
+        "interaction": false,
         "comments": "",
         "width": "auto",
         "height": "auto",
@@ -393,14 +401,105 @@
         "decimals": 2,
         "target": "127.0.0.1:2000",
         "ignoreDefaults": false,
-        "bypass": false,
+        "bypass": true,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
+      },
+      {
+        "type": "fader",
+        "top": 290,
+        "left": "auto",
+        "lock": false,
+        "id": "active_fader",
+        "visible": true,
+        "interaction": false,
+        "comments": "",
+        "width": "auto",
+        "height": 30,
+        "expand": "false",
+        "colorText": "auto",
+        "colorWidget": "auto",
+        "colorStroke": "auto",
+        "colorFill": "auto",
+        "alphaStroke": "auto",
+        "alphaFillOff": "auto",
+        "alphaFillOn": "auto",
+        "lineWidth": "auto",
+        "padding": "auto",
+        "html": "",
+        "css": "width: 77%; left: 21%;",
+        "design": "compact",
+        "knobSize": "auto",
+        "horizontal": true,
+        "pips": false,
+        "dashed": false,
+        "gradient": [],
+        "snap": false,
+        "spring": false,
+        "doubleTap": false,
+        "range": {
+          "min": 0,
+          "max": 1
+        },
+        "logScale": false,
+        "sensitivity": 1,
+        "steps": "",
+        "origin": "auto",
+        "value": "",
+        "default": "",
+        "linkId": "",
+        "address": "/active/percentage",
+        "preArgs": "",
+        "typeTags": "",
+        "decimals": 2,
+        "target": "",
+        "ignoreDefaults": false,
+        "bypass": false,
+        "onCreate": "",
+        "onValue": "",
+        "onTouch": ""
+      },
+      {
+        "type": "text",
+        "top": 290,
+        "left": "2%",
+        "lock": false,
+        "id": "active_name",
+        "visible": true,
+        "comments": "",
+        "width": "auto",
+        "height": 30,
+        "expand": "false",
+        "colorText": "auto",
+        "colorWidget": "auto",
+        "colorStroke": "auto",
+        "colorFill": "auto",
+        "alphaStroke": "auto",
+        "alphaFillOff": "auto",
+        "alphaFillOn": "auto",
+        "lineWidth": "auto",
+        "padding": "auto",
+        "html": "",
+        "css": "width: 19%;",
+        "vertical": false,
+        "wrap": true,
+        "align": "center",
+        "value": "",
+        "default": "",
+        "linkId": "",
+        "address": "/active/name",
+        "preArgs": "",
+        "decimals": 2,
+        "target": "",
+        "onCreate": "",
+        "onValue": ""
       }
     ],
     "tabs": [],
     "onValue": "",
     "hideMenu": false,
-    "onCreate": ""
+    "onCreate": "",
+    "lock": false
   }
 }
