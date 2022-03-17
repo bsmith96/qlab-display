@@ -1,6 +1,6 @@
 {
   "createdWith": "Open Stage Control",
-  "version": "1.14.5",
+  "version": "1.15.0",
   "type": "session",
   "content": {
     "type": "root",
@@ -69,7 +69,8 @@
         "decimals": 2,
         "target": "",
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "text",
@@ -103,7 +104,8 @@
         "target": "",
         "align": "left",
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "text",
@@ -137,7 +139,8 @@
         "target": "",
         "align": "center",
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
@@ -159,7 +162,7 @@
         "lineWidth": "auto",
         "padding": "auto",
         "html": "",
-        "css": "width: 130rem; left: calc(98% - 260rem);",
+        "css": "width: 260rem; left: calc(98% - 260rem);",
         "vertical": false,
         "wrap": false,
         "value": 1,
@@ -180,14 +183,15 @@
         "ignoreDefaults": false,
         "bypass": false,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
         "top": "auto",
         "left": "auto",
         "id": "BACKUP",
-        "visible": true,
+        "visible": false,
         "interaction": true,
         "comments": "",
         "width": "auto",
@@ -223,14 +227,15 @@
         "ignoreDefaults": false,
         "bypass": false,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
         "top": 300,
         "left": "2%",
         "id": "<<",
-        "visible": false,
+        "visible": true,
         "interaction": true,
         "comments": "",
         "width": "auto",
@@ -246,7 +251,7 @@
         "lineWidth": "auto",
         "padding": "auto",
         "html": "",
-        "css": "font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nborder-radius: 10rem;",
+        "css": "font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nborder-radius: 10rem;",
         "colorTextOn": "auto",
         "label": "auto",
         "vertical": false,
@@ -266,14 +271,15 @@
         "ignoreDefaults": false,
         "bypass": false,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
         "top": 300,
         "left": "auto",
         "id": ">>",
-        "visible": false,
+        "visible": true,
         "interaction": true,
         "comments": "",
         "width": "auto",
@@ -289,7 +295,7 @@
         "lineWidth": "auto",
         "padding": "auto",
         "html": "",
-        "css": "font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nleft: 68%;\nborder-radius: 10rem;",
+        "css": "font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nleft: 50%;\nborder-radius: 10rem;",
         "colorTextOn": "auto",
         "label": "auto",
         "vertical": false,
@@ -309,7 +315,8 @@
         "ignoreDefaults": false,
         "bypass": false,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
@@ -317,7 +324,7 @@
         "left": "auto",
         "id": "GO",
         "visible": false,
-        "interaction": true,
+        "interaction": false,
         "comments": "",
         "width": "auto",
         "height": "auto",
@@ -350,9 +357,10 @@
         "decimals": 2,
         "target": "127.0.0.1:2000",
         "ignoreDefaults": false,
-        "bypass": false,
+        "bypass": true,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
       },
       {
         "type": "button",
@@ -360,7 +368,7 @@
         "left": "auto",
         "id": "PANIC",
         "visible": false,
-        "interaction": true,
+        "interaction": false,
         "comments": "",
         "width": "auto",
         "height": "auto",
@@ -393,14 +401,51 @@
         "decimals": 2,
         "target": "127.0.0.1:2000",
         "ignoreDefaults": false,
-        "bypass": false,
+        "bypass": true,
         "onValue": "",
-        "onCreate": ""
+        "onCreate": "",
+        "lock": false
+      },
+      {
+        "type": "text",
+        "top": 530,
+        "left": 190,
+        "lock": false,
+        "id": "activeCue",
+        "visible": true,
+        "comments": "",
+        "width": 420,
+        "height": 170,
+        "expand": "false",
+        "colorText": "auto",
+        "colorWidget": "auto",
+        "colorStroke": "auto",
+        "colorFill": "auto",
+        "alphaStroke": "auto",
+        "alphaFillOff": "auto",
+        "alphaFillOn": "auto",
+        "lineWidth": "auto",
+        "padding": "auto",
+        "html": "",
+        "css": "",
+        "vertical": false,
+        "wrap": false,
+        "align": "center",
+        "value": "",
+        "default": "",
+        "linkId": "",
+        "address": "/active/name",
+        "preArgs": "",
+        "decimals": 2,
+        "target": "",
+        "onCreate": "",
+        "onValue": ""
       }
     ],
     "tabs": [],
     "onValue": "",
     "hideMenu": false,
-    "onCreate": ""
+    "onCreate": "",
+    "lock": false
   }
 }

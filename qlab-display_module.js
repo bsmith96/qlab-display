@@ -2,7 +2,7 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.1.0-beta6
+ * @version 4.1.0-beta7
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
@@ -44,7 +44,9 @@ if (config.QlabCount == 1) {
   var whichQlab = 'ONLY'
 } else if (config.QlabCount == 2) {
   var whichQlab = 'MAIN'
-}
+  
+// global variables
+var cueListChildren = [];
 
 
 /*******************************************
@@ -76,6 +78,9 @@ function onInit(qlab) {
 
   // ask for current position
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
+
+  // get list of IDs in this cue list
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/children');
 
   // activate heartbeat if required
   if (useTCP == false) {
@@ -133,6 +138,8 @@ function onRefresh(qlab) {
   // ask for current position
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
 
+  getActive(qlab);
+
 }
 
 // Transport to both QLab computers simultaneously
@@ -145,6 +152,17 @@ function sendTransport(theAddress, qlab_A, qlab_B) {
 
   send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueList_A + theAddress);
   send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress);
+}
+
+// Get list of active cues
+function getActive(qlab) {
+
+  var [theWorkspace, theCueList, theIP] = qlab;
+
+  const theAddress = '/workspace/' + theWorkspace + '/cue_id/' + theCueList;
+
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/runningCues/shallow');
+
 }
 
 // Interpret incoming messages
@@ -163,6 +181,7 @@ function interpretIncoming(data, qlab) {
     }
     send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
     send(host, 53000, '/cue_id/' + args[0].value + '/number');
+    getActive(qlab);
     return
   } else if (address.endsWith('/playheadId')) { // replies to direct requests (startup, refresh, and changeover)
     var returnedValue = decodeQlabReply(args);
@@ -178,6 +197,16 @@ function interpretIncoming(data, qlab) {
       receive(host, 53001, nameAddress, returnedValue) // send the name to the server
     } else if (address.endsWith('/number')) {
       receive(host, 53001, numAddress, returnedValue) // send the number to the server
+    } else if (address.endsWith('/runningCues/shallow')) {
+      var json = decodeQlabReply(args);
+
+      for (cue of json) {
+          //send(host, 53000, '/cue_id/' + cue.uniqueID + '/percentActionElapsed')
+          console.log(cue.uniqueID);
+        if (cueListChildren.includes(cue.uniqueID)) {
+        receive(host, 53001, '/active/name', cue.listName)
+        }
+      }
     }
     return
   }
@@ -301,7 +330,6 @@ module.exports = {
       }
     }
 
-    return {address, args, host, port}
+    return {address, args, host, port} 
   }
-
-}
+}}
