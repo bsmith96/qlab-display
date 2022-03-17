@@ -44,7 +44,8 @@ if (config.QlabCount == 1) {
   var whichQlab = 'ONLY'
 } else if (config.QlabCount == 2) {
   var whichQlab = 'MAIN'
-  
+}
+
 // global variables
 var cueListChildren = [];
 
@@ -207,11 +208,23 @@ function interpretIncoming(data, qlab) {
           receive(host, 53001, '/active/name', cue.listName)
         }
       }
-    } else if (address.startsWith('/reply') && address.endsWith('children')) {
+
+      send(host, 53000, '/cue_id/' + theCueList + '/isRunning');
+    } else if (address.endsWith('children')) {
       var json = decodeQlabReply(args);
   
       for (cue of json) {
         cueListChildren.push(cue.uniqueID);
+      }
+    } else if (address.endsWith('isRunning')) {
+
+      setTimeout(function(){
+        send(host, 53000, '/cue_id/' + theCueList + '/isRunning')
+      }, 1000);
+
+      var result = decodeQlabReply(args);
+      if (result === false) {
+        receive('/active/name', "");
       }
     }
     return
@@ -338,5 +351,4 @@ module.exports = {
 
     return {address, args, host, port} 
   }
-}
 }
