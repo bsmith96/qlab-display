@@ -204,8 +204,14 @@ function interpretIncoming(data, qlab) {
           //send(host, 53000, '/cue_id/' + cue.uniqueID + '/percentActionElapsed')
           console.log(cue.uniqueID);
         if (cueListChildren.includes(cue.uniqueID)) {
-        receive(host, 53001, '/active/name', cue.listName)
+          receive(host, 53001, '/active/name', cue.listName)
         }
+      }
+    } else if (address.startsWith('/reply') && address.endsWith('children')) {
+      var json = decodeQlabReply(args);
+  
+      for (cue of json) {
+        cueListChildren.push(cue.uniqueID);
       }
     }
     return
