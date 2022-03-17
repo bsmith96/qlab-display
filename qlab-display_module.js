@@ -202,10 +202,9 @@ function interpretIncoming(data, qlab) {
       var json = decodeQlabReply(args);
 
       for (cue of json) {
-          //send(host, 53000, '/cue_id/' + cue.uniqueID + '/percentActionElapsed')
-          console.log(cue.uniqueID);
         if (cueListChildren.includes(cue.uniqueID)) {
-          receive(host, 53001, '/active/name', cue.listName)
+          receive(host, 53001, '/active/name', cue.listName);
+          receive(host, 53001, '/active/num', cue.number);
         }
       }
 
@@ -225,6 +224,7 @@ function interpretIncoming(data, qlab) {
       var result = decodeQlabReply(args);
       if (result === false) {
         receive('/active/name', "");
+        receive('/active/num', "");
       }
     }
     return
