@@ -2,11 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.1.0-beta6
+ * @version 4.2.0
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v4.1.0-beta6  + deactivates hidden transport buttons to guarantee no accidental messages
+ *   v4.2.0  + tidying up
  */
 
 
@@ -46,6 +46,9 @@ if (config.QlabCount == 1) {
   var whichQlab = 'MAIN'
 }
 
+// global variables
+var cueListChildren = [];
+
 
 /*******************************************
  ***************  FUNCTIONS  ***************
@@ -77,6 +80,9 @@ function onInit(qlab) {
   // ask for current position
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
 
+  // get list of IDs in this cue list
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/children');
+
   // activate heartbeat if required
   if (useTCP == false) {
     sendThump(theWorkspace, theIP);
@@ -93,7 +99,32 @@ function deactivateBackup() {
 
 function activateBackup() {
   receive('/EDIT', 'BACKUP', {'visible':true});
-  receive('/EDIT', 'REFRESH', {'css':'width: 130rem; left: calc(98% - 260rem);'});
+  receive('/EDIT', 'REFRESH', {'css':'width: 130rem; left: calc(98% - 130rem);'});
+  receive('/SESSION/SAVE');
+}
+
+// Show transport controls if required
+function showTransport() {
+  receive('/EDIT', '<<', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nborder-radius: 10rem;'});
+  receive('/EDIT', '>>', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nleft: 68%;\nborder-radius: 10rem;'});
+  receive('/EDIT', 'GO', {'visible':true, 'interaction': true, 'bypass': false});
+  receive('/EDIT', 'PANIC', {'visible':true, 'interaction': true, 'bypass': false});
+  receive('/SESSION/SAVE');
+}
+
+function hideTransport() {
+  receive('/EDIT', '<<', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', '>>', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', 'GO', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', 'PANIC', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/SESSION/SAVE');
+}
+
+function showReducedTransport() {
+  receive('/EDIT', '<<', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nborder-radius: 10rem;'});
+  receive('/EDIT', '>>', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nleft: 50%;\nborder-radius: 10rem;'});
+  receive('/EDIT', 'GO', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', 'PANIC', {'visible':false, 'interaction': false, 'bypass': true});
   receive('/SESSION/SAVE');
 }
 
@@ -133,6 +164,31 @@ function onRefresh(qlab) {
   // ask for current position
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
 
+  getActive(qlab);
+
+}
+
+// Transport to both QLab computers simultaneously
+function sendTransport(theAddress, qlab_A, qlab_B) {
+
+  var [theWorkspace_A, theCueList_A, theIP_A] = qlab_A;
+  var [theWorkspace_B, theCueList_B, theIP_B] = qlab_B;
+
+  // ##FIXME##: can't by default move the playhead of a particular cue list
+
+  send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueList_A + theAddress);
+  send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress);
+}
+
+// Get list of active cues
+function getActive(qlab) {
+
+  var [theWorkspace, theCueList, theIP] = qlab;
+
+  const theAddress = '/workspace/' + theWorkspace + '/cue_id/' + theCueList;
+
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/runningCues/shallow');
+
 }
 
 // Transport to both QLab computers simultaneously
@@ -163,6 +219,7 @@ function interpretIncoming(data, qlab) {
     }
     send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
     send(host, 53000, '/cue_id/' + args[0].value + '/number');
+    getActive(qlab);
     return
   } else if (address.endsWith('/playheadId')) { // replies to direct requests (startup, refresh, and changeover)
     var returnedValue = decodeQlabReply(args);
@@ -178,6 +235,34 @@ function interpretIncoming(data, qlab) {
       receive(host, 53001, nameAddress, returnedValue) // send the name to the server
     } else if (address.endsWith('/number')) {
       receive(host, 53001, numAddress, returnedValue) // send the number to the server
+    } else if (address.endsWith('/runningCues/shallow')) {
+      var json = decodeQlabReply(args);
+
+      for (cue of json) {
+        if (cueListChildren.includes(cue.uniqueID)) {
+          receive(host, 53001, '/active/name', cue.listName);
+          receive(host, 53001, '/active/num', cue.number);
+        }
+      }
+
+      send(host, 53000, '/cue_id/' + theCueList + '/isRunning');
+    } else if (address.endsWith('children')) {
+      var json = decodeQlabReply(args);
+  
+      for (cue of json) {
+        cueListChildren.push(cue.uniqueID);
+      }
+    } else if (address.endsWith('isRunning')) {
+
+      setTimeout(function(){
+        send(host, 53000, '/cue_id/' + theCueList + '/isRunning')
+      }, 1000);
+
+      var result = decodeQlabReply(args);
+      if (result === false) {
+        receive('/active/name', "");
+        receive('/active/num', "");
+      }
     }
     return
   }
@@ -301,7 +386,6 @@ module.exports = {
       }
     }
 
-    return {address, args, host, port}
+    return {address, args, host, port} 
   }
-
 }
