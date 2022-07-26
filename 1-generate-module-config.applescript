@@ -1,7 +1,7 @@
 -- @description Get Unique IDs for Open Stage Control monitoring
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 3.0
+-- @version 3.1-beta5
 -- @testedmacos 10.14.6
 -- @testedqlab 4.6.10
 -- @about 
@@ -12,7 +12,7 @@
 -- @separateprocess TRUE
 
 -- @changelog
---   v3.0 + improvements in usability
+--   v3.1-beta5 + add option for next/prev only
 
 
 ---- RUN SCRIPT ---------------------------
@@ -33,8 +33,10 @@ set thisIP to chooseOption(listIPs, "IP address")
 -- get TCP or UDP from the user
 if thisMac is "Main" then
 	set useProtocol to button returned of (display dialog "Would you like to use TCP or UDP to connect to Qlab? TCP is recommended" with title "Please select protocol" buttons {"TCP", "UDP", "Cancel"} default button "TCP" cancel button "Cancel")
+	set displayTransport to button returned of (display dialog "Would you like to display transport controls?" with title "Transport controls" buttons {"Full", "Next/Prev", "No"} default button "No")
 else
 	set useProtocol to "not needed"
+	set displayTransport to "not needed"
 end if
 
 -- get QLab and Cue List info
@@ -66,7 +68,7 @@ else if thisMac is "Backup" then
 end if
 
 -- write to config file
-writeToConfig(jsonString, thisMac, useProtocol)
+writeToConfig(jsonString, thisMac, useProtocol, displayTransport)
 
 
 -- FUNCTIONS ------------------------------
@@ -110,7 +112,7 @@ on chooseOption(theList, theName)
 	return theOption
 end chooseOption
 
-on checkConfig(thisMac, useProtocol)
+on checkConfig(thisMac, useProtocol, displayTransport)
 	set configFile to ((getRootFolder() as text) & "qlab-info-config.json")
 	if thisMac is "Main" then
 		set configPreface to ¬
@@ -126,6 +128,17 @@ on checkConfig(thisMac, useProtocol)
 			set configPreface to configPreface & "true"
 		else if useProtocol is "UDP" then
 			set configPreface to configPreface & "false"
+		end if
+		
+		set configPreface to configPreface & ",
+		\"displayTransport\": "
+		
+		if displayTransport is "Full" then
+			set configPreface to configPreface & "\"full\""
+		else if displayTransport is "Next/Prev" then
+			set configPreface to configPreface & "\"reduced\""
+		else if displayTransport is "No" then
+			set configPreface to configPreface & "\"false\""
 		end if
 		
 		set configPreface to configPreface & "
@@ -150,8 +163,8 @@ on checkMain(thisMac)
 	log item -2 of configContents
 end checkMain
 
-on writeToConfig(theText, thisMac, useProtocol)
-	set configFile to checkConfig(thisMac, useProtocol)
+on writeToConfig(theText, thisMac, useProtocol, displayTransport)
+	set configFile to checkConfig(thisMac, useProtocol, displayTransport)
 	
 	if thisMac is "Main" then
 		writeToFile(theText, configFile, true)
