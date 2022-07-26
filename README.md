@@ -73,10 +73,13 @@ This has the added advantage that, if the Sound Operator needs to switch to the 
 ### Redundant QLab - Backup
 ![Redundant Qlab - Backup](.images/D_Module_Redundant-Qlab_Backup.png)
 
+## Module - Currently Playing
+![Currently playing](.images/E_Module_Currently-playing.png)
+
 ## Transport Controls
 
 ### Transport - Full
-![Transport - Full](.images/E_Module_Transport_Full.png)
+![Transport - Full](.images/F_Module_Transport_Full.png)
 
 ### Transport - Reduced
-![Transport - Reduced](.images/F_Module_Transport_Reduced.png)
+![Transport - Reduced](.images/G_Module_Transport_Reduced.png)
