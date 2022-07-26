@@ -2,11 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.1.0-beta8
+ * @version 4.2.0
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v4.1.0-beta6  + tidying up
+ *   v4.2.0  + tidying up
  */
 
 
@@ -128,6 +128,31 @@ function showReducedTransport() {
   receive('/SESSION/SAVE');
 }
 
+// Show transport controls if required
+function showTransport() {
+  receive('/EDIT', '<<', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nborder-radius: 10rem;'});
+  receive('/EDIT', '>>', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 30%;\nleft: 68%;\nborder-radius: 10rem;'});
+  receive('/EDIT', 'GO', {'visible':true, 'interaction': true, 'bypass': false});
+  receive('/EDIT', 'PANIC', {'visible':true, 'interaction': true, 'bypass': false});
+  receive('/SESSION/SAVE');
+}
+
+function hideTransport() {
+  receive('/EDIT', '<<', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', '>>', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', 'GO', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', 'PANIC', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/SESSION/SAVE');
+}
+
+function showReducedTransport() {
+  receive('/EDIT', '<<', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nborder-radius: 10rem;'});
+  receive('/EDIT', '>>', {'visible':true, 'interaction': true, 'bypass': false, 'css':'font-size: 200%;\nheight: 100rem;\nwidth: 48%;\nleft: 50%;\nborder-radius: 10rem;'});
+  receive('/EDIT', 'GO', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/EDIT', 'PANIC', {'visible':false, 'interaction': false, 'bypass': true});
+  receive('/SESSION/SAVE');
+}
+
 // Refresh qlab
 function onRefresh(qlab) {
 
@@ -164,6 +189,18 @@ function getActive(qlab) {
 
   send(theIP, 53000, '/workspace/' + theWorkspace + '/runningCues/shallow');
 
+}
+
+// Transport to both QLab computers simultaneously
+function sendTransport(theAddress, qlab_A, qlab_B) {
+
+  var [theWorkspace_A, theCueList_A, theIP_A] = qlab_A;
+  var [theWorkspace_B, theCueList_B, theIP_B] = qlab_B;
+
+  // ##FIXME##: can't by default move the playhead of a particular cue list
+
+  send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueList_A + theAddress);
+  send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress);
 }
 
 // Interpret incoming messages
