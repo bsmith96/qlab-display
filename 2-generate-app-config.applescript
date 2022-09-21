@@ -7,7 +7,7 @@
 -- @about Creates a file to open/load in Open Stage Control, with settings required to start the server.
 
 -- @changelog
---   v1.0  + change filenames
+--   v2.0  + change filenames
 
 
 ---- DECLARATIONS -------------------------
