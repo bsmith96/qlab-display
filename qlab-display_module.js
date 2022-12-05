@@ -2,11 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.2.1
+ * @version 4.2.2-b.2022.12.05
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v4.2.1  + removed duplicate functions
+ *   v4.2.2-b.2022.12.05  + Refresh regenerates list of unique IDs in cue list
  */
 
 
@@ -138,6 +138,10 @@ function onRefresh(qlab) {
 
   // ask for current position
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
+
+  // get list of IDs in this cue list
+  cueListChildren = [];
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + 'children');
 
   getActive(qlab);
 
