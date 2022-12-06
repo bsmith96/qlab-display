@@ -2,13 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.3.0-b.2022.12.06
+ * @version 4.3.0-b.2022.12.06.b
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v4.3.0-b.2022.12.06  + display currently playing from a different cue list to the triggers
- *                        + panic transport triggers the playback cue list
- *                        # BUG if the playhead goes empty after the final click, currently playing cue will not display
+ *   v4.3.0-b.2022.12.06.b  + BUG FIX now displays running cue when there is no playhead
  */
 
 
@@ -191,6 +189,7 @@ function interpretIncoming(data, qlab) {
     if (args == "") {
       receive(nameAddress, "")
       receive(numAddress, "")
+      getActive(qlab);
       return
     }
     send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
