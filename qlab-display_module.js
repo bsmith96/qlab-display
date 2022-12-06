@@ -2,11 +2,11 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.3.0-b.2022.12.06.b
+ * @version 4.3.0-b.2022.12.06.c
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v4.3.0-b.2022.12.06.b  + BUG FIX now displays running cue when there is no playhead
+ *   v4.3.0-b.2022.12.06.c  + BUG FIX works with main and backup
  */
 
 
@@ -30,6 +30,7 @@ if (config.QlabCount == 1) {
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
   var cueListID = config.QlabMain.cueListID;
+  var cueListPlayingID = config.QlabMain.cueListPlayingID;
   var qlabIP_B = config.QlabBackup.ip;
   var workspaceID_B = config.QlabBackup.workspaceID;
   var cueListID_B = config.QlabBackup.cueListID;
