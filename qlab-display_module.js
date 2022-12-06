@@ -2,11 +2,13 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.2.1
+ * @version 4.3.0-b.2022.12.06
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v4.2.1  + removed duplicate functions
+ *   v4.3.0-b.2022.12.06  + display currently playing from a different cue list to the triggers
+ *                        + panic transport triggers the playback cue list
+ *                        # BUG if the playhead goes empty after the final click, currently playing cue will not display
  */
 
 
@@ -25,6 +27,7 @@ if (config.QlabCount == 1) {
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
   var cueListID = config.QlabMain.cueListID;
+  var cueListPlayingID = config.QlabMain.cueListPlayingID;
 } else if (config.QlabCount == 2) {
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
@@ -32,12 +35,13 @@ if (config.QlabCount == 1) {
   var qlabIP_B = config.QlabBackup.ip;
   var workspaceID_B = config.QlabBackup.workspaceID;
   var cueListID_B = config.QlabBackup.cueListID;
+  var cueListPlayingID_B = config.QlabBackup.cueListPlayingID;
 };
 
 // arrays for functions
-var qlabMain = [workspaceID, cueListID, qlabIP];
-var qlabBackup = [workspaceID_B, cueListID_B, qlabIP_B];
-var qlabOnly = [workspaceID, cueListID, qlabIP];
+var qlabMain = [workspaceID, cueListID, qlabIP, cueListPlayingID];
+var qlabBackup = [workspaceID_B, cueListID_B, qlabIP_B, cueListPlayingID_B];
+var qlabOnly = [workspaceID, cueListID, qlabIP, cueListPlayingID];
 
 // variable for backup changeover
 if (config.QlabCount == 1) {
@@ -72,7 +76,7 @@ function sendThump(id, ip) {
 // Initial function on module load
 function onInit(qlab) {
 
-  var [theWorkspace, theCueList, theIP] = qlab;
+  var [theWorkspace, theCueList, theIP, theCueListPlaying] = qlab;
 
   // ask for updates
   send(theIP, 53000, '/workspace/' + theWorkspace + '/updates', 1);
@@ -81,7 +85,7 @@ function onInit(qlab) {
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
 
   // get list of IDs in this cue list
-  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/children');
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueListPlaying + '/children');
 
   // activate heartbeat if required
   if (useTCP == false) {
@@ -131,13 +135,17 @@ function showReducedTransport() {
 // Refresh qlab
 function onRefresh(qlab) {
 
-  var [theWorkspace, theCueList, theIP] = qlab;
+  var [theWorkspace, theCueList, theIP, theCueListPlaying] = qlab;
 
   // ask for updates
   send(theIP, 53000, '/workspace/' + theWorkspace + '/updates', 1);
 
   // ask for current position
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
+
+  // get list of IDs in this cue list
+  cueListChildren = [];
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueListPlaying + '/children');
 
   getActive(qlab);
 
@@ -146,19 +154,24 @@ function onRefresh(qlab) {
 // Transport to both QLab computers simultaneously
 function sendTransport(theAddress, qlab_A, qlab_B) {
 
-  var [theWorkspace_A, theCueList_A, theIP_A] = qlab_A;
-  var [theWorkspace_B, theCueList_B, theIP_B] = qlab_B;
+  var [theWorkspace_A, theCueList_A, theIP_A, theCueListPlaying_A] = qlab_A;
+  var [theWorkspace_B, theCueList_B, theIP_B, theCueListPlaying_B] = qlab_B;
 
-  // ##FIXME##: can't by default move the playhead of a particular cue list
+  // ##FIXME##: can't by default move the playhead of a particular cue list -- NOT AN ISSUE? IT DOES WORK?
 
-  send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueList_A + theAddress);
-  send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress);
+  if (theAddress === '/panic') {
+    send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueListPlaying_A + theAddress);
+    send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueListPlaying_B + theAddress);
+  } else {
+    send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueList_A + theAddress);
+    send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress);
+  }
 }
 
 // Get list of active cues
 function getActive(qlab) {
 
-  var [theWorkspace, theCueList, theIP] = qlab;
+  var [theWorkspace, theCueList, theIP, theCueListPlaying] = qlab;
 
   const theAddress = '/workspace/' + theWorkspace + '/cue_id/' + theCueList;
 
@@ -170,7 +183,7 @@ function getActive(qlab) {
 function interpretIncoming(data, qlab) {
 
   var {address, args, host, port} = data;
-  var [theWorkspace, theCueList, theIP] = qlab;
+  var [theWorkspace, theCueList, theIP, theCueListPlaying] = qlab;
 
   // when receiving an update with the playhead's cue id, ask for name and number
   // does not pass this message on to the server
@@ -208,7 +221,7 @@ function interpretIncoming(data, qlab) {
         }
       }
 
-      send(host, 53000, '/cue_id/' + theCueList + '/isRunning');
+      send(host, 53000, '/cue_id/' + theCueListPlaying + '/isRunning');
     } else if (address.endsWith('children')) {
       var json = decodeQlabReply(args);
   
@@ -218,7 +231,7 @@ function interpretIncoming(data, qlab) {
     } else if (address.endsWith('isRunning')) {
 
       setTimeout(function(){
-        send(host, 53000, '/cue_id/' + theCueList + '/isRunning')
+        send(host, 53000, '/cue_id/' + theCueListPlaying + '/isRunning')
       }, 1000);
 
       var result = decodeQlabReply(args);

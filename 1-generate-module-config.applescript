@@ -20,9 +20,12 @@ set thisMac to (choose from list {"Main", "Backup"} with title "Which QLab mac i
 
 checkMain(thisMac)
 
--- get the cue list to use
+-- get the cue list to display playhead of
 set theCueLists to getCueLists()
-set thisCueList to chooseOption(theCueLists, "cue list")
+set thisCueList to chooseOption(theCueLists, "trigger cue list")
+
+-- get the cue list to display running cues of
+set thisCueListPlaying to chooseOption(theCueLists, "playback cue list")
 
 -- get IP address of this computer
 set listIPs to getIP()
@@ -43,6 +46,7 @@ tell application id "com.figure53.Qlab.4" to tell front workspace
 	-- get unique IDs
 	set thisWorkspaceID to unique id
 	set thisCueListID to uniqueID of (first cue list whose q name is thisCueList)
+	set thisCueListPlayingID to uniqueID of (first cue list whose q name is thisCueListPlaying)
 	
 end tell
 
@@ -51,7 +55,8 @@ if thisMac is "Main" then
 	set jsonString to "	\"QlabMain\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
-		\"cueListID\": \"" & thisCueListID & "\"
+		\"cueListID\": \"" & thisCueListID & "\",
+		\"cueListPlayingID\": \"" & thisCueListPlayingID & "\"
 	},
 	\"QlabCount\": 1
 }"
@@ -59,7 +64,8 @@ else if thisMac is "Backup" then
 	set jsonString to "\"QlabBackup\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
-		\"cueListID\": \"" & thisCueListID & "\"
+		\"cueListID\": \"" & thisCueListID & "\",
+		\"cueListPlayingID\": \"" & thisCueListPlayingID & "\"
 	},
 	\"QlabCount\": 2
 }"
