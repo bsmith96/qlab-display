@@ -1,7 +1,10 @@
 # QLab Display
 
-[![GitHub license](https://img.shields.io/github/license/bsmith96/qlab-display.svg)](https://github.com/bsmith96/qlab-display/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/release/bsmith96/qlab-display.svg)](https://GitHub.com/bsmith96/qlab-display/releases/)
+[![GitHub license](https://img.shields.io/github/license/bsmith96/qlab-display.svg?style=for-the-badge)](https://github.com/bsmith96/qlab-display/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/bsmith96/qlab-display.svg?style=for-the-badge)](https://GitHub.com/bsmith96/qlab-display/releases/)
+[![GitHub stargazers](https://img.shields.io/github/stars/bsmith96/qlab-display.svg?style=for-the-badge)](https://github.com/bsmith96/qlab-display/stargazers/)
+[![GitHub issues](https://img.shields.io/github/issues/bsmith96/qlab-display.svg?style=for-the-badge)](https://github.com/bsmith96/qlab-display/issues/)
+
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F120U9I)
 
