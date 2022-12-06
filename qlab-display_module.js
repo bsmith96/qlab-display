@@ -166,18 +166,6 @@ function getActive(qlab) {
 
 }
 
-// Transport to both QLab computers simultaneously
-function sendTransport(theAddress, qlab_A, qlab_B) {
-
-  var [theWorkspace_A, theCueList_A, theIP_A] = qlab_A;
-  var [theWorkspace_B, theCueList_B, theIP_B] = qlab_B;
-
-  // ##FIXME##: can't by default move the playhead of a particular cue list
-
-  send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueList_A + theAddress);
-  send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress);
-}
-
 // Interpret incoming messages
 function interpretIncoming(data, qlab) {
 
