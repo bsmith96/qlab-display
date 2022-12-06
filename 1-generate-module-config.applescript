@@ -1,7 +1,7 @@
 -- @description Get Unique IDs for Open Stage Control monitoring
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 3.1
+-- @version 3.2
 -- @about 
 --     Store this script in the directory you will be running the Open Stage Control custom module from, on that computer
 --     Using remote file accesss over the network, open and run the script in script editor on your Main and Backup Qlab macs
@@ -10,7 +10,7 @@
 -- @separateprocess TRUE
 
 -- @changelog
---   v3.1  + add option for next/prev only
+--   v3.2  + add setting for separate trigger and playback cue lists
 
 
 ---- RUN SCRIPT ---------------------------
