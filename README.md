@@ -1,5 +1,5 @@
 # QLab Display - Separate Cue List
-> **This can now be found as a 'forked' repository [here](https://github.com/bsmith96/qlab-display-separate-cue-list).
+> **This can now be found as a 'forked' repository [here](https://github.com/bsmith96/qlab-display-separate-cue-list).**
 
 [![GitHub license](https://img.shields.io/github/license/bsmith96/qlab-display.svg?style=for-the-badge)](https://github.com/bsmith96/qlab-display/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/bsmith96/qlab-display.svg?style=for-the-badge)](https://GitHub.com/bsmith96/qlab-display/releases/)
