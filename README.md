@@ -10,6 +10,8 @@
 
 > **NB**: If you are looking for the standalone Node.js version, check release v3.1.0 and earlier.
 
+> **There is an alternative version of this repository at [github.com/bsmith96/qlab-display-separate-cue-list/](https://github.com/bsmith96/qlab-display-separate-cue-list/), which allows you to set separate trigger and playback cue lists.** This was forked from v4.2.2.
+
 # Custom Module for Open Stage Control
 
 This version runs entirely within the [Open Stage Control](http://openstagecontrol.ammd.net/) software, as a 'custom module'. It requests updates from QLab when there are changes to the workspace, and interprets the responses appropriately - the module ignores responses which do not relate to the playhead position of the chosen cue list.
