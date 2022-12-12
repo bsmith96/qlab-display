@@ -2,11 +2,12 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.2.2-b.2022.12.12
+ * @version 4.2.2-b.2022.12.12.b
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
- *   v4.2.2-b.2022.12.12  + BUG FIX #35 - currently playing now keeps working when the playhead reaches the end of the cue list
+ *   v4.2.2-b.2022.12.12.b  + General cleanup
+ *                          + no longer gets buildup of "is a cue playing" functions
  */
 
 
@@ -16,11 +17,13 @@
 
 var config = loadJSON("qlab-info-config.json");
 
-var nameAddress = config.control.address.name;
-var numAddress = config.control.address.number;
-var useTCP = config.control.useTCP;
-var displayTransport = config.control.displayTransport;
+// global config
+var nameAddress = config.control.address.name; // OSC address to send to Open Stage Control with cue name
+var numAddress = config.control.address.number; // OSC address to send to Open Stage Control with cue number
+var useTCP = config.control.useTCP; // Whether to connect using TCP or UDP
+var displayTransport = config.control.displayTransport; // Whether to display the transport buttons
 
+// QLab info
 if (config.QlabCount == 1) {
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
@@ -47,13 +50,15 @@ if (config.QlabCount == 1) {
 }
 
 // global variables
-var cueListChildren = [];
+var cueListChildren = []; // empty array to populate with cues in current cue list
+var isActive;
 
 
 /*******************************************
  ***************  FUNCTIONS  ***************
  *******************************************/
 
+ // Decode reply JSON from  QLab
 function decodeQlabReply(args) {
   var replyData = JSON.parse(args[0].value); // decode the JSON reply from Qlab
   var toReturn = replyData.data; // get the cue display name from within the JSON
@@ -77,11 +82,11 @@ function onInit(qlab) {
   // ask for updates
   send(theIP, 53000, '/workspace/' + theWorkspace + '/updates', 1);
 
-  // ask for current position
+  // ask for current playhead position of the specified cuelist
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
 
   // get list of IDs in this cue list
-  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/children');
+  getChildren(qlab);
 
   // activate heartbeat if required
   if (useTCP == false) {
@@ -140,10 +145,7 @@ function onRefresh(qlab) {
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
 
   // get list of IDs in this cue list
-  cueListChildren = [];
-  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + 'children');
-
-  getActive(qlab);
+  getChildren(qlab);
 
 }
 
@@ -151,12 +153,16 @@ function onRefresh(qlab) {
 function sendTransport(theAddress, qlab_A, qlab_B) {
 
   var [theWorkspace_A, theCueList_A, theIP_A] = qlab_A;
-  var [theWorkspace_B, theCueList_B, theIP_B] = qlab_B;
+  if (qlab_B !== undefined) {
+    var [theWorkspace_B, theCueList_B, theIP_B] = qlab_B;
+  }
 
   // ##FIXME##: can't by default move the playhead of a particular cue list
 
   send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueList_A + theAddress);
-  send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress);
+  if (qlab_B !== undefined) {
+    send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress)
+  }
 }
 
 // Get list of active cues
@@ -164,22 +170,31 @@ function getActive(qlab) {
 
   var [theWorkspace, theCueList, theIP] = qlab;
 
-  const theAddress = '/workspace/' + theWorkspace + '/cue_id/' + theCueList;
-
   send(theIP, 53000, '/workspace/' + theWorkspace + '/runningCues/shallow');
 
 }
 
-// Transport to both QLab computers simultaneously
-function sendTransport(theAddress, qlab_A, qlab_B) {
+// Get list of cues in the selected cue list
+function getChildren(qlab) {
 
-  var [theWorkspace_A, theCueList_A, theIP_A] = qlab_A;
-  var [theWorkspace_B, theCueList_B, theIP_B] = qlab_B;
+  var [theWorkspace, theCueList, theIP] = qlab;
 
-  // ##FIXME##: can't by default move the playhead of a particular cue list
+  cueListChildren = []; // empty the array before processing
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/children');
 
-  send(theIP_A, 53000, '/workspace/' + theWorkspace_A + '/cue_id/' + theCueList_A + theAddress);
-  send(theIP_B, 53000, '/workspace/' + theWorkspace_B + '/cue_id/' + theCueList_B + theAddress);
+}
+
+// Check if a cue is still running
+function checkActive(qlab) {
+
+  var [theWorkspace, theCueList, theIP] = qlab;
+
+  clearInterval(isActive);
+
+  isActive = setInterval(function(){
+    send(theIP, 53000, '/cue_id/' + theCueList + '/isRunning')
+  }, 1000);
+  return
 }
 
 // Interpret incoming messages
@@ -190,60 +205,73 @@ function interpretIncoming(data, qlab) {
 
   // when receiving an update with the playhead's cue id, ask for name and number
   // does not pass this message on to the server
-  if (address === '/update/workspace/' + theWorkspace + '/cueList/' + theCueList + '/playbackPosition') { // updates
-    if (args == "") {
+  if (address === '/update/workspace/' + theWorkspace + '/cueList/' + theCueList + '/playbackPosition') { // replies which are updates of changes of playback position
+    if (args == "") { // if playhead is now not set (e.g. end of cue list)
       receive(nameAddress, "");
       receive(numAddress, "");
       getActive(qlab);
       return
+    } else { // if playhead is set
+      send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
+      send(host, 53000, '/cue_id/' + args[0].value + '/number');
+      getActive(qlab);
+      return
     }
-    send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
-    send(host, 53000, '/cue_id/' + args[0].value + '/number');
-    getActive(qlab);
-    return
   } else if (address.endsWith('/playheadId')) { // replies to direct requests (startup, refresh, and changeover)
     var returnedValue = decodeQlabReply(args);
     send(host, 53000, '/cue_id/' + returnedValue + '/displayName');
     send(host, 53000, '/cue_id/' + returnedValue + '/number');
     return
+  //} else if (address.startsWith('/update/workspace/' + theWorkspace) && !address.endsWith('dashboard')) { // ##FIXME## when a cue is updated, only alerts you to the individual cue and not the cue list. When playback state changes, alerts you to all the changing states. This is supposed to aumatically refresh the list of cues when something changes, but it's currently just iterating constantly and doing too much
+    //onRefresh(qlab);
   }
   
-  // when receiving a reply with the name, interpret and send to server
+  // when receiving a reply to a direct request
   if (address.startsWith('/reply')) {
-    var returnedValue = decodeQlabReply(args); // decode the reply to get the value requested
+    var returnedValue = decodeQlabReply(args);
+
+    // CUE NAME
     if (address.endsWith('/displayName')) {
       receive(host, 53001, nameAddress, returnedValue) // send the name to the server
+
+    // CUE NUMBER
     } else if (address.endsWith('/number')) {
       receive(host, 53001, numAddress, returnedValue) // send the number to the server
+
+    // LIST OF RUNNING CUES
     } else if (address.endsWith('/runningCues/shallow')) {
       var json = decodeQlabReply(args);
-
       for (cue of json) {
-        if (cueListChildren.includes(cue.uniqueID)) {
-          receive(host, 53001, '/active/name', cue.listName);
-          receive(host, 53001, '/active/num', cue.number);
+        if (cueListChildren.includes(cue.uniqueID)) { // for each running cue, check if it is in the monitored cue list
+          receive(host, 53001, '/active/name', cue.listName); // send the name to the server
+          receive(host, 53001, '/active/num', cue.number); // send the number to the server
+          checkActive(qlab);
         }
       }
 
-      send(host, 53000, '/cue_id/' + theCueList + '/isRunning');
+    // LIST OF CHILDREN CUES IN THE MONITORED CUE LIST
     } else if (address.endsWith('children')) {
       var json = decodeQlabReply(args);
   
       for (cue of json) {
-        cueListChildren.push(cue.uniqueID);
+        cueListChildren.push(cue.uniqueID); // add uniqueID to the array of cues in the monitored cue list
       }
+
+    // 
     } else if (address.endsWith('isRunning')) {
 
-      setTimeout(function(){
-        send(host, 53000, '/cue_id/' + theCueList + '/isRunning')
-      }, 1000);
+      // checkActive = setTimeout(function(){
+      //   send(host, 53000, '/cue_id/' + theCueList + '/isRunning')
+      // }, 1000);
 
       var result = decodeQlabReply(args);
       if (result === false) {
         receive('/active/name', "");
         receive('/active/num', "");
+        clearInterval(isActive);
       }
     }
+
     return
   }
 
@@ -318,9 +346,13 @@ module.exports = {
     if (address === '/module/refresh') {
       if (whichQlab === "ONLY") {
         onRefresh(qlabOnly);
+        getActive(qlabOnly);
       } else if (whichQlab === 'MAIN' || whichQlab === 'BACKUP') {
         onRefresh(qlabMain);
         onRefresh(qlabBackup);
+        getActive(qlabMain);
+        getActive(qlabBackup);
+
       }
       return
     };
@@ -346,13 +378,13 @@ module.exports = {
     // Transport controls
     if (whichQlab == "ONLY") {
       if (address == '/transport/next') {
-        sendTransport('/playhead/next', qlabOnly, qlabBackup)
+        sendTransport('/playhead/next', qlabOnly)
       } else if (address == '/transport/previous') {
-        sendTransport('/playhead/previous', qlabOnly, qlabBackup)
+        sendTransport('/playhead/previous', qlabOnly)
       } else if (address === '/transport/go') {
-        sendTransport('/go', qlabOnly, qlabBackup)
-      } else if (address === '/transport/panic', qlabOnly, qlabBackup) {
-        sendTransport('/panic', qlabOnly, qlabBackup)
+        sendTransport('/go', qlabOnly)
+      } else if (address === '/transport/panic') {
+        sendTransport('/panic', qlabOnly)
       }
     } else if (whichQlab == 'MAIN' || whichQlab === 'BACKUP') {
       if (address === '/transport/next') {
