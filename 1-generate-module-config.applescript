@@ -11,6 +11,8 @@
 
 -- @changelog
 --   v3.1  + add option for next/prev only
+--   v3.2  + update for Qlab 5
+--         + add function for OSC passcode
 
 
 ---- RUN SCRIPT ---------------------------
