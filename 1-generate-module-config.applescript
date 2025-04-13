@@ -38,7 +38,7 @@ else
 end if
 
 -- get QLab and Cue List info
-tell application id "com.figure53.Qlab.4" to tell front workspace
+tell application id "com.figure53.Qlab.5" to tell front workspace
 	
 	-- get unique IDs
 	set thisWorkspaceID to unique id
@@ -80,7 +80,7 @@ on getRootFolder()
 end getRootFolder
 
 on getCueLists()
-	tell application id "com.figure53.Qlab.4" to tell front workspace
+	tell application id "com.figure53.Qlab.5" to tell front workspace
 		
 		set theCueLists to every cue list
 		
