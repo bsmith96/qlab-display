@@ -20,6 +20,9 @@ set thisMac to (choose from list {"Main", "Backup"} with title "Which QLab mac i
 
 checkMain(thisMac)
 
+-- get the qlab OSC passcode
+set thisWorkspacePasscode to text returned of (display dialog "Please input the OSC passcode for this workspace" with title "OSC Passcode" default answer "")
+
 -- get the cue list to use
 set theCueLists to getCueLists()
 set thisCueList to chooseOption(theCueLists, "cue list")
@@ -30,7 +33,7 @@ set thisIP to chooseOption(listIPs, "IP address")
 
 -- get TCP or UDP from the user
 if thisMac is "Main" then
-	set useProtocol to button returned of (display dialog "Would you like to use TCP or UDP to connect to Qlab? TCP is recommended" with title "Please select protocol" buttons {"TCP", "UDP", "Cancel"} default button "TCP" cancel button "Cancel")
+	set useProtocol to button returned of (display dialog "Would you like to use TCP or UDP to connect to Qlab? TCP is recommended. With the update to QLab 5 and enabling OSC passcodes, UDP is currently untested." with title "Please select protocol" buttons {"TCP", "UDP", "Cancel"} default button "TCP" cancel button "Cancel")
 	set displayTransport to button returned of (display dialog "Would you like to display transport controls?" with title "Transport controls" buttons {"Full", "Next/Prev", "No"} default button "No")
 else
 	set useProtocol to "not needed"
@@ -51,6 +54,7 @@ if thisMac is "Main" then
 	set jsonString to "	\"QlabMain\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
+		\"workspacePasscode\": \"" & thisWorkspacePasscode & "\",
 		\"cueListID\": \"" & thisCueListID & "\"
 	},
 	\"QlabCount\": 1
@@ -59,6 +63,7 @@ else if thisMac is "Backup" then
 	set jsonString to "\"QlabBackup\": {
 		\"ip\": \"" & thisIP & "\",
 		\"workspaceID\": \"" & thisWorkspaceID & "\",
+		\"workspacePasscode\": \"" & thisWorkspacePasscode & "\",
 		\"cueListID\": \"" & thisCueListID & "\"
 	},
 	\"QlabCount\": 2
@@ -98,7 +103,7 @@ end getCueLists
 on getIP()
 	try
 		set theReturned to (do shell script "ifconfig | grep inet | grep -v inet6 | cut -d\" \" -f2")
-		set theIPs to splitString(theReturned, "")
+		set theIPs to splitString(theReturned, "\r")
 	on error
 		set theIPs to {"Can't get Local IP"}
 	end try
@@ -113,7 +118,7 @@ end chooseOption
 on checkConfig(thisMac, useProtocol, displayTransport)
 	set configFile to ((getRootFolder() as text) & "qlab-info-config.json")
 	if thisMac is "Main" then
-		set configPreface to Â¬
+		set configPreface to Â
 			"{
 	\"control\": {
 		\"address\": {
@@ -174,11 +179,11 @@ end writeToConfig
 on writeToFile(thisData, targetFile, appendData) -- (string, file path as string, boolean)
 	try
 		set the targetFile to the targetFile as text
-		set the openTargetFile to Â¬
+		set the openTargetFile to Â
 			open for access file targetFile with write permission
-		if appendData is false then Â¬
+		if appendData is false then Â
 			set eof of the openTargetFile to 0
-		if appendData is "backup" then Â¬
+		if appendData is "backup" then Â
 			set eof of the openTargetFile to ((get eof of the openTargetFile) - 16)
 		write thisData to the openTargetFile starting at eof
 		close access the openTargetFile

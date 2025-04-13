@@ -8,6 +8,8 @@
  * @changelog
  *   v4.2.2-b.2022.12.12.b  + General cleanup
  *                          + no longer gets buildup of "is a cue playing" functions
+ *   v4.5.0-b.2025.04.13.b  + Beginning of updating for QLab 5
+ *                          + Adding the ability to work with OSC passcodes
  */
 
 
@@ -27,6 +29,7 @@ var displayTransport = config.control.displayTransport; // Whether to display th
 if (config.QlabCount == 1) {
   var qlabIP = config.QlabMain.ip;
   var workspaceID = config.QlabMain.workspaceID;
+  var workspacePasscode = config.QlabMain.workspacePasscode;
   var cueListID = config.QlabMain.cueListID;
 } else if (config.QlabCount == 2) {
   var qlabIP = config.QlabMain.ip;
@@ -78,6 +81,9 @@ function sendThump(id, ip) {
 function onInit(qlab) {
 
   var [theWorkspace, theCueList, theIP] = qlab;
+
+  // connect to qlab with passcode
+  send(theIP, 53000, '/workspace/' + theWorkspace + '/connect', workspacePasscode)
 
   // ask for updates
   send(theIP, 53000, '/workspace/' + theWorkspace + '/updates', 1);

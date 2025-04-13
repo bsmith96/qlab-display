@@ -68,14 +68,14 @@ on JSONtoRecord from fp
 	
 	set JSONdata to NSData's dataWithContentsOfFile:fp
 	
-	set [x, E] to (NSJSONSerialization's Â¬
-		JSONObjectWithData:JSONdata Â¬
-			options:0 Â¬
+	set [x, E] to (NSJSONSerialization's Â
+		JSONObjectWithData:JSONdata Â
+			options:0 Â
 			|error|:(reference))
 	
-	if E â‰  missing value then error E
+	if E ­ missing value then error E
 	
-	tell x to if its isKindOfClass:NSDictionary then Â¬
+	tell x to if its isKindOfClass:NSDictionary then Â
 		return it as record
 	
 	x as list
@@ -99,9 +99,9 @@ end getRootFolder
 on writeToFile(thisData, targetFile, appendData) -- (string, file path as string, boolean)
 	try
 		set the targetFile to the targetFile as text
-		set the openTargetFile to Â¬
-			open for access file targetFile as Â«class furlÂ» with write permission
-		if appendData is false then Â¬
+		set the openTargetFile to Â
+			open for access file targetFile as Çclass furlÈ with write permission
+		if appendData is false then Â
 			set eof of the openTargetFile to 0
 		write thisData to the openTargetFile starting at eof
 		close access the openTargetFile
