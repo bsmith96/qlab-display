@@ -2,7 +2,7 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.5.1-b.2025.09.07.b
+ * @version 4.5.2-b.2025.09.07.b
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
@@ -11,7 +11,7 @@
  *   v4.5.0-b.2025.04.13.b  + Beginning of updating for QLab 5
  *                          + Adding the ability to work with OSC passcodes
  *   v4.5.1-b.2025.09.07.b  - FIX incompatibility with QLab 5.5.3, due to legacy OSC command
- */
+ *   v4.5.2-b.2025.09.07.b  + Add ability to display Cue Note instead of Cue Name
 
 
 /*******************************************
@@ -25,6 +25,15 @@ var nameAddress = config.control.address.name; // OSC address to send to Open St
 var numAddress = config.control.address.number; // OSC address to send to Open Stage Control with cue number
 var useTCP = config.control.useTCP; // Whether to connect using TCP or UDP
 var displayTransport = config.control.displayTransport; // Whether to display the transport buttons
+var displayNameOrNotes = config.control.displayNameOrNotes; // Whether to display the Cue Name or Cue Notes in the "name" field
+
+var nameOrNotesAddress = ''; // Create empty variable
+
+if (displayNameOrNotes === 'name') { // Populate variable with correct OSC message, depending on the config 
+  var nameOrNotesAddress = '/displayName'
+} else if (displayNameOrNotes === 'notes') {
+  var nameOrNotesAddress = '/notes'
+};
 
 // QLab info
 if (config.QlabCount == 1) {
@@ -219,14 +228,14 @@ function interpretIncoming(data, qlab) {
       getActive(qlab);
       return
     } else { // if playhead is set
-      send(host, 53000, '/cue_id/' + args[0].value + '/displayName');
+        send(host, 53000, '/cue_id/' + args[0].value + nameOrNotesAddress);
       send(host, 53000, '/cue_id/' + args[0].value + '/number');
       getActive(qlab);
       return
     }
   } else if (address.endsWith('/playheadId')) { // replies to direct requests (startup, refresh, and changeover)
     var returnedValue = decodeQlabReply(args);
-    send(host, 53000, '/cue_id/' + returnedValue + '/displayName');
+    send(host, 53000, '/cue_id/' + returnedValue + nameOrNotesAddress);
     send(host, 53000, '/cue_id/' + returnedValue + '/number');
     return
   //} else if (address.startsWith('/update/workspace/' + theWorkspace) && !address.endsWith('dashboard')) { // ##FIXME## when a cue is updated, only alerts you to the individual cue and not the cue list. When playback state changes, alerts you to all the changing states. This is supposed to aumatically refresh the list of cues when something changes, but it's currently just iterating constantly and doing too much
@@ -238,7 +247,7 @@ function interpretIncoming(data, qlab) {
     var returnedValue = decodeQlabReply(args);
 
     // CUE NAME
-    if (address.endsWith('/displayName')) {
+    if (address.endsWith('/displayName') || address.endsWith('/notes')) {
       receive(host, 53001, nameAddress, returnedValue) // send the name to the server
 
     // CUE NUMBER
