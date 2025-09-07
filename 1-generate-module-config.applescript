@@ -1,7 +1,7 @@
 -- @description Get Unique IDs for Open Stage Control monitoring
 -- @author Ben Smith
 -- @link bensmithsound.uk
--- @version 3.1
+-- @version 3.3
 -- @about 
 --     Store this script in the directory you will be running the Open Stage Control custom module from, on that computer
 --     Using remote file accesss over the network, open and run the script in script editor on your Main and Backup Qlab macs
@@ -13,6 +13,7 @@
 --   v3.1  + add option for next/prev only
 --   v3.2  + update for Qlab 5
 --         + add function for OSC passcode
+--   v3.3  + add option for display either the cue name, or cue notes
 
 
 ---- RUN SCRIPT ---------------------------
@@ -33,13 +34,15 @@ set thisCueList to chooseOption(theCueLists, "cue list")
 set listIPs to getIP()
 set thisIP to chooseOption(listIPs, "IP address")
 
--- get TCP or UDP from the user
+-- get TCP or UDP from the user, whether to display transport, and whether to display cue name or notes
 if thisMac is "Main" then
 	set useProtocol to button returned of (display dialog "Would you like to use TCP or UDP to connect to Qlab? TCP is recommended. With the update to QLab 5 and enabling OSC passcodes, UDP is currently untested." with title "Please select protocol" buttons {"TCP", "UDP", "Cancel"} default button "TCP" cancel button "Cancel")
 	set displayTransport to button returned of (display dialog "Would you like to display transport controls?" with title "Transport controls" buttons {"Full", "Next/Prev", "No"} default button "No")
+	set displayNameOrNotes to button returned of (display dialog "Would you like to display the Cue Name, or the Cue Notes?" with title "Cue Name or Notes?" buttons {"Name", "Notes"} default button "Name")
 else
 	set useProtocol to "not needed"
 	set displayTransport to "not needed"
+	set displayNameOrNotes to "not needed"
 end if
 
 -- get QLab and Cue List info
@@ -73,7 +76,7 @@ else if thisMac is "Backup" then
 end if
 
 -- write to config file
-writeToConfig(jsonString, thisMac, useProtocol, displayTransport)
+writeToConfig(jsonString, thisMac, useProtocol, displayTransport, displayNameOrNotes)
 
 
 -- FUNCTIONS ------------------------------
@@ -117,7 +120,7 @@ on chooseOption(theList, theName)
 	return theOption
 end chooseOption
 
-on checkConfig(thisMac, useProtocol, displayTransport)
+on checkConfig(thisMac, useProtocol, displayTransport, displayNameOrNotes)
 	set configFile to ((getRootFolder() as text) & "qlab-info-config.json")
 	if thisMac is "Main" then
 		set configPreface to Â
@@ -145,6 +148,15 @@ on checkConfig(thisMac, useProtocol, displayTransport)
 		else if displayTransport is "No" then
 			set configPreface to configPreface & "\"false\""
 		end if
+
+		set configPreface to configPreface & ",
+		\"displayNameOrNotes\": "
+
+		if displayNameOrNotes is "Name" then
+			set configPreface to configPreface & "\"name\""
+		else if displayNameOrNotes is "Notes" then
+			set configPreface to configPreface & "\"notes\""
+		end if
 		
 		set configPreface to configPreface & "
 	},
@@ -168,8 +180,8 @@ on checkMain(thisMac)
 	log item -2 of configContents
 end checkMain
 
-on writeToConfig(theText, thisMac, useProtocol, displayTransport)
-	set configFile to checkConfig(thisMac, useProtocol, displayTransport)
+on writeToConfig(theText, thisMac, useProtocol, displayTransport, displayNameOrNotes)
+	set configFile to checkConfig(thisMac, useProtocol, displayTransport, displayNameOrNotes)
 	
 	if thisMac is "Main" then
 		writeToFile(theText, configFile, true)
