@@ -2,7 +2,7 @@
  * @description Open Stage Control - Custom Module to retrieve Qlab playhead in a certain cue list
  * @author Ben Smith
  * @link bensmithsound.uk
- * @version 4.2.2-b.2022.12.12.b
+ * @version 4.5.1-b.2025.09.07.b
  * @about Asks for updates from Qlab, then interprets the appropriate replies and displays the results.
  * 
  * @changelog
@@ -10,6 +10,7 @@
  *                          + no longer gets buildup of "is a cue playing" functions
  *   v4.5.0-b.2025.04.13.b  + Beginning of updating for QLab 5
  *                          + Adding the ability to work with OSC passcodes
+ *   v4.5.1-b.2025.09.07.b  - FIX incompatibility with QLab 5.5.3, due to legacy OSC command
  */
 
 
@@ -86,7 +87,7 @@ function onInit(qlab) {
   send(theIP, 53000, '/workspace/' + theWorkspace + '/connect', workspacePasscode)
 
   // ask for updates
-  send(theIP, 53000, '/workspace/' + theWorkspace + '/updates', 1);
+  send(theIP, 53000, '/updates', 1);
 
   // ask for current playhead position of the specified cuelist
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
@@ -145,7 +146,7 @@ function onRefresh(qlab) {
   var [theWorkspace, theCueList, theIP] = qlab;
 
   // ask for updates
-  send(theIP, 53000, '/workspace/' + theWorkspace + '/updates', 1);
+  send(theIP, 53000, '/updates', 1);
 
   // ask for current position
   send(theIP, 53000, '/workspace/' + theWorkspace + '/cue_id/' + theCueList + '/playheadId');
